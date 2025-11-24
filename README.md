@@ -49,35 +49,35 @@ de valider les comptes et de superviser l’activité.
 
 ## 📸 Captures d’écran
 
-> Les fichiers d’images doivent être placés dans un dossier `screenshots/`
+> Les fichiers d’images doivent être placés dans un dossier `screenshoots/`
 > à la racine du projet (même niveau que `composer.json`).
 > GitHub les affichera automatiquement si les chemins correspondent.
 
-Exemples (à adapter selon vos fichiers réels) :
+Exemples (adaptés aux fichiers réels du projet) :
 
 ### Page de connexion
 
-![Page de connexion](screenshots/01-login.png)
+![Page de connexion](screenshoots/05-Connexion.png)
 
 ### Recherche de professionnels de santé
 
-![Recherche de professionnels](screenshots/02-search-professionnels.png)
+![Recherche de professionnels](screenshoots/01-Accueil.png)
 
 ### Calendrier de prise de rendez-vous
 
-![Calendrier de RDV](screenshots/03-calendrier.png)
+![Calendrier de RDV](screenshoots/08-Calendrier.png)
 
 ### Espace patient – Mes rendez-vous
 
-![Mes rendez-vous patient](screenshots/04-mes-rdv-patient.png)
+![Mes rendez-vous patient](screenshoots/11-RDV.png)
 
 ### Espace professionnel – Mes rendez-vous
 
-![Mes rendez-vous professionnel](screenshots/05-mes-rdv-pro.png)
+![Mes rendez-vous professionnel](screenshoots/10-Consultation.png)
 
 ### Validation des professionnels (administrateur)
 
-![Validation admin](screenshots/06-admin-validation.png)
+![Validation admin](screenshoots/06-email.png)
 
 ---
 
