@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Compte en attente de validation{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="h3 mb-0">En attente de validation</h1>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-info">
+                            <p>Votre compte est actuellement en attente de validation par un administrateur.</p>
+                            <p>Vous recevrez un email une fois votre compte validé.</p>
+                        </div>
+                        
+                        <p>Vous pouvez :</p>
+                        <ul>
+                            <li><a href="{{ path('app_logout') }}">Vous déconnecter</a></li>
+                            <li><a href="mailto:kantowilliam0@gmail.com">Contacter l'administrateur par mail.</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

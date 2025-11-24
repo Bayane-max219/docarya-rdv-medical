@@ -1,0 +1,1639 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Plateforme Santé - Trouvez votre professionnel{% endblock %}
+
+{% block body %}
+    <div class="xk7p2_container">
+        <!-- En-tête de la page -->
+        <header class="qm3j8_header">
+            <h1 class="zt5v9_title">Trouvez votre professionnel de santé</h1>
+            <p class="lp6r4_subtitle">Recherchez parmi nos spécialistes qualifiés et prenez rendez-vous en quelques clics</p>
+        </header>
+
+        <!-- Affichage des messages flash -->
+        {% if app.session.flashbag.has('error') %}
+            <div class="gf2h7_flash_container">
+                {% for message in app.session.flashbag.get('error') %}
+                    <div class="yw9k1_flash_error">
+                        <svg class="bn4t6_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm-1-7v2h2v-2h-2zm0-8v6h2V7h-2z" fill="currentColor"/>
+                        </svg>
+                        <span>{{ message }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- SECTION DE RECHERCHE HORIZONTALE AU-DESSUS DES RÉSULTATS -->
+        <section class="jt7r2_search_section">
+            <form action="{{ path('app_search') }}" method="get" class="qs8w3_search_form stylish-search-form horizontal-search-form mb-4">
+                <div class="row g-3 align-items-start w-100">
+                    <div class="col-md-6">
+                        <label for="specialite_nom" class="xz2v8_label stylish-label mb-1">Spécialité ou nom</label>
+                        <div class="position-relative">
+                            <input type="text" id="specialite_nom" name="specialite_nom" value="{{ filters.specialite_nom ?? '' }}" class="form-control stylish-input rq9t2_input ps-5" placeholder="Ex: Cardiologue, Dr. Martin...">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="localisation" class="xz2v8_label stylish-label mb-1">Localisation</label>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <button type="button" id="use_current_location" class="rq9t2_location_btn w-100">
+                                <i class="fas fa-location-crosshairs me-2"></i>
+                                Utiliser ma position actuelle
+                            </button>
+                            <button type="button" id="toggleGeolocDetails" class="btn btn-link p-0 stylish-advanced-btn simple-advanced-btn" style="box-shadow:none; background:none; color:inherit; font-weight:500; font-size:1.25rem; display:flex; align-items:center; gap:0.5rem;" aria-label="Afficher/masquer la géolocalisation">
+                                <i class="fas fa-chevron-down geoloc-chevron" style="font-size:1.2rem; transition: transform 0.3s;"></i>
+                            </button>
+                        </div>
+                        <span id="location_status" class="zx5c8_location_status ms-2"></span>
+                        <input type="hidden" id="user_latitude" name="user_latitude" value="{{ filters.user_latitude ?? '' }}">
+                        <input type="hidden" id="user_longitude" name="user_longitude" value="{{ filters.user_longitude ?? '' }}">
+                        <div class="geoloc-details-collapse" id="geolocDetails">
+                            <div class="uy4k7_form_group" id="radius_group" style="margin-top:10px;">
+                                <label for="search_radius" class="xz2v8_label">Rayon de recherche (km)</label>
+                                <input type="range" id="search_radius" name="search_radius" min="1" max="100" value="{{ filters.search_radius ?? 10 }}" class="rq9t2_range">
+                                <span id="radius_value">{{ filters.search_radius ?? 10 }} km</span>
+                            </div>
+                            <div class="uy4k7_form_group" id="travel_mode_group" style="margin-top:10px;">
+                                <label for="travel_mode" class="xz2v8_label">Mode de transport</label>
+                                <select id="travel_mode" name="travel_mode" class="rq9t2_input">
+                                    <option value="driving" {% if filters.travel_mode == 'driving' %}selected{% endif %}>Voiture</option>
+                                    <option value="walking" {% if filters.travel_mode == 'walking' %}selected{% endif %}>Marche</option>
+                                    <option value="bicycling" {% if filters.travel_mode == 'bicycling' %}selected{% endif %}>Vélo</option>
+                                    <option value="transit" {% if filters.travel_mode == 'transit' %}selected{% endif %}>Transport en commun</option>
+                                </select>
+                            </div>
+                            <div id="map-filtre" style="height: 300px; margin-top: 15px;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="d-flex gap-2 flex-wrap flex-md-nowrap align-items-end stylish-action-row">
+                            <button type="button" class="nh6b2_toggle_filters btn btn-link p-0 stylish-advanced-btn simple-advanced-btn" id="toggleFilters" style="margin-bottom:0; box-shadow:none; background:none; color:inherit; font-weight:500; font-size:1.25rem; display:flex; align-items:center; gap:0.5rem;">
+                                <span>Filtres avancés</span>
+                                <i class="fas fa-chevron-down ms-2" style="font-size:1.2rem;"></i>
+                            </button>
+                            <button type="reset" class="nh6b2_reset_btn btn btn-outline-secondary stylish-reset-btn">
+                                <i class="fas fa-sync-alt me-1 text-secondary"></i>
+                                Réinitialiser
+                            </button>
+                            <button type="submit" class="vm4k9_submit_btn btn btn-primary stylish-search-btn">
+                                <i class="fas fa-search me-1 text-white"></i>
+                                Rechercher
+                            </button>
+                        </div>
+                        <div class="mt-3">
+                            <div class="vm4k9_filter_grid nh6b2_hidden" id="advancedFilters">
+                                <!-- Copie ici le contenu des filtres avancés existants, sans la géolocalisation -->
+                                <div class="uy4k7_form_group">
+                                    <label for="tarif_min" class="xz2v8_label">Tarif minimum (Ariary)</label>
+                                    <input type="number" id="tarif_min" name="tarif_min" value="{{ filters.tarif_min ?? '' }}" class="rq9t2_input" placeholder="Min">
+                                </div>
+                                <div class="uy4k7_form_group">
+                                    <label for="tarif_max" class="xz2v8_label">Tarif maximum (Ariary)</label>
+                                    <input type="number" id="tarif_max" name="tarif_max" value="{{ filters.tarif_max ?? '' }}" class="rq9t2_input" placeholder="Max">
+                                </div>
+                                <div class="uy4k7_form_group">
+                                    <label for="jour" class="xz2v8_label">Jour disponible</label>
+                                    <select id="jour" name="jour" class="rq9t2_input">
+                                        <option value="">Tous les jours</option>
+                                        <option value="Lundi" {% if filters.jour == 'Lundi' %} selected {% endif %}>Lundi</option>
+                                        <option value="Mardi" {% if filters.jour == 'Mardi' %} selected {% endif %}>Mardi</option>
+                                        <option value="Mercredi" {% if filters.jour == 'Mercredi' %} selected {% endif %}>Mercredi</option>
+                                        <option value="Jeudi" {% if filters.jour == 'Jeudi' %} selected {% endif %}>Jeudi</option>
+                                        <option value="Vendredi" {% if filters.jour == 'Vendredi' %} selected {% endif %}>Vendredi</option>
+                                        <option value="Samedi" {% if filters.jour == 'Samedi' %} selected {% endif %}>Samedi</option>
+                                        <option value="Dimanche" {% if filters.jour == 'Dimanche' %} selected {% endif %}>Dimanche</option>
+                                    </select>
+                                </div>
+                                <div class="uy4k7_form_group">
+                                    <label for="heure_debut" class="xz2v8_label">Disponible depuis</label>
+                                    <select id="heure_debut" name="heure_debut" class="rq9t2_input">
+                                        <option value="">Toutes les heures</option>
+                                        {% for h in range(8, 20) %}
+                                            <option value="{{ h }}h00" {% if filters.heure_debut == h ~ 'h00' %} selected {% endif %}>{{ h }}h00</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="uy4k7_form_group">
+                                    <label for="heure_fin" class="xz2v8_label">Disponible jusqu'à</label>
+                                    <select id="heure_fin" name="heure_fin" class="rq9t2_input">
+                                        <option value="">Toutes les heures</option>
+                                        {% for h in range(8, 20) %}
+                                            <option value="{{ h }}h00" {% if filters.heure_fin == h ~ 'h00' %} selected {% endif %}>{{ h }}h00</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+        <!-- Section des résultats EN DEHORS DU WRAPPER GRID -->
+        <section class="uy4k7_results_section wide-results-section real-full-width-section">
+            <div class="xz2v8_results_header better-align">
+                <h2 class="gt7h3_section_title">Professionnels disponibles</h2>
+                {% if professionnels|length > 0 %}
+                    <p class="kp3j7_results_count">{{ professionnels|length }} résultat(s) trouvé(s)</p>
+                {% endif %}
+            </div>
+            {% if professionnels|length > 0 %}
+                <div class="table-responsive custom-table-responsive">
+                    <table class="table align-middle mb-0 bg-white pro-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th scope="col">Nom</th>
+                                <th scope="col">Spécialité</th>
+                                <th scope="col">Horaires</th>
+                                <th scope="col">Tarif</th>
+                                <th scope="col" class="text-end">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pro in professionnels %}
+                                <tr>
+                                    <td class="d-flex align-items-center gap-2">
+                                        {% if pro.professionnel.photo != NULL %}
+                                            <img class="rounded-circle" src="{{ asset('uploads/professionnels/resized/' ~ pro.professionnel.photo|replace({'.jpg': '_resized.jpg','.png': '_resized.png','.gif': '_resized.gif'})) }}" alt="Photo de {{ pro.professionnel.prenom }} {{ pro.professionnel.nom }}" style="width:40px;height:40px;object-fit:cover;" onerror="this.src='https://ui-avatars.com/api/?name={{ pro.professionnel.prenom|url_encode }}+{{ pro.professionnel.nom|url_encode }}&background=3a86ff&color=fff&size=150'">
+                                        {% else %}
+                                            <span class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width:40px;height:40px;font-weight:600;">{{ pro.professionnel.prenom|first }}{{ pro.professionnel.nom|first }}</span>
+                                        {% endif %}
+                                        <span class="fw-bold">Dr. {{ pro.professionnel.prenom }} {{ pro.professionnel.nom }}</span>
+                                    </td>
+                                    <td>{{ pro.professionnel.specialite.nom }}</td>
+                                    <td>
+                                        <span class="zx5c8_schedule_toggle text-primary d-inline-flex align-items-center" style="cursor:pointer;">
+                                            <svg class="me-1" width="18" height="18" fill="none" stroke="#3b82f6" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                            Voir les horaires
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="d-inline-flex align-items-center">
+                                            <svg class="me-1" width="24" height="24" fill="none" stroke="#6b7280" stroke-width="2" viewBox="0 0 24 24">
+                                                <circle cx="12" cy="12" r="10"/>
+                                                <text x="12" y="16" text-anchor="middle" font-size="12" fill="#6b7280" font-family="Arial" font-weight="bold">$</text>
+                                            </svg>
+                                            {{ pro.professionnel.tarif }} Ariary
+                                        </span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex align-items-center gap-2">
+                                            <a href="#" class="zx5c8_profile_btn btn btn-primary me-2 d-inline-flex align-items-center"
+                                               data-bs-toggle="modal"
+                                               data-bs-target="#profilModal{{ pro.professionnel.id }}">
+                                                <svg class="bn4t6_icon me-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                                Voir le profil
+                                            </a>
+                                            <a href="{{ path('app_professionnel_avis', {'id': pro.professionnel.id}) }}" class="nh6b2_review_btn btn btn-outline-secondary d-inline-flex align-items-center">
+                                                <svg class="bn4t6_icon me-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                </svg>
+                                                Avis
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="nh6b2_schedule_panel" style="display:none;">
+                                    <td colspan="5">
+                                        {% if pro.horairesTravail is iterable and pro.horairesTravail|length > 0 %}
+                                            <div class="vm4k9_schedule_grid d-flex flex-wrap gap-3">
+                                                {% for horaire in pro.horairesTravail %}
+                                                    <div class="uy4k7_schedule_day">
+                                                        <span class="xz2v8_day_name">{{ horaire.jour|slice(0, 3) }}</span>
+                                                        <span class="gt7h3_day_hours">{{ horaire.heureDebut }} - {{ horaire.heureFin }}</span>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        {% else %}
+                                            <p class="kp3j7_no_schedule">Aucun horaire disponible</p>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Pagination -->
+                {% if totalPages > 1 %}
+                    <div class="vm4k9_pagination mt-3">
+                        {% if currentPage > 1 %}
+                            <a href="{{ path('app_search', {'page': currentPage - 1} + filters|merge({})) }}" class="uy4k7_page_btn uy4k7_prev">
+                                <svg class="bn4t6_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Précédent
+                            </a>
+                        {% endif %}
+                        
+                        <div class="xz2v8_page_numbers">
+                            {% for i in 1..totalPages %}
+                                {% if i == currentPage %}
+                                    <span class="gt7h3_page_current">{{ i }}</span>
+                                {% elseif i == 1 or i == totalPages or (i >= currentPage - 1 and i <= currentPage + 1) %}
+                                    <a href="{{ path('app_search', {'page': i} + filters|merge({})) }}" class="gt7h3_page_link">{{ i }}</a>
+                                {% elseif i == 2 or i == totalPages - 1 %}
+                                    <span class="gt7h3_page_dots">...</span>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        {% if currentPage < totalPages %}
+                            <a href="{{ path('app_search', {'page': currentPage + 1} + filters|merge({})) }}" class="uy4k7_page_btn uy4k7_next">
+                                Suivant
+                                <svg class="bn4t6_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="kp3j7_no_results">
+                    <svg class="rq9t2_no_results_icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <h3>Aucun professionnel trouvé</h3>
+                    <p>Essayez de modifier vos critères de recherche pour obtenir plus de résultats.</p>
+                    <button type="button" class="zx5c8_reset_search">Réinitialiser la recherche</button>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+{% for pro in professionnels %}
+    <!-- Modal Profil pour chaque professionnel -->
+    <div class="modal fade" id="profilModal{{ pro.professionnel.id }}" tabindex="-1" aria-labelledby="profilModalLabel{{ pro.professionnel.id }}" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="profilModalLabel{{ pro.professionnel.id }}">
+              Profil de Dr. {{ pro.professionnel.prenom }} {{ pro.professionnel.nom }}
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+          </div>
+          <div class="modal-body">
+            {% include 'home/professionnel_show.html.twig' with {
+              professionnel: pro.professionnel,
+              moyenneNotes: pro.moyenneNotes|default(0),
+              nbAvis: pro.nbAvis|default(0),
+              avisList: pro.avisList|default([]),
+              horairesTravail: pro.horairesTravail|default([])
+            } %}
+          </div>
+        </div>
+      </div>
+    </div>
+{% endfor %}
+
+{# Modal Bootstrap pour afficher le profil #}
+<div class="modal fade" id="modalProfil" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Profil du professionnel</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Fermer">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modalProfilBody">
+        <!-- Le contenu AJAX s'affichera ici -->
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Variables pour la géolocalisation
+        let userLatitude = {{ filters.user_latitude ?? 'null' }};
+        let userLongitude = {{ filters.user_longitude ?? 'null' }};
+        let map = null;
+        let userMarker = null;
+        let radiusCircle = null;
+        
+        // Éléments DOM
+        const useCurrentLocationBtn = document.getElementById('use_current_location');
+        const locationStatus = document.getElementById('location_status');
+        const userLatitudeInput = document.getElementById('user_latitude');
+        const userLongitudeInput = document.getElementById('user_longitude');
+        const searchRadiusInput = document.getElementById('search_radius');
+        const radiusValueDisplay = document.getElementById('radius_value');
+        const mapElement = document.getElementById('map-filtre');
+        const radiusGroup = document.getElementById('radius_group');
+        const travelModeGroup = document.getElementById('travel_mode_group');
+        
+        // Initialiser la carte si des coordonnées sont déjà définies
+        if (userLatitude && userLongitude) {
+            initMap(userLatitude, userLongitude);
+        }
+        
+        // Mise à jour de l'affichage du rayon
+        if (searchRadiusInput) {
+            searchRadiusInput.addEventListener('input', function() {
+                radiusValueDisplay.textContent = this.value + ' km';
+                
+                // Mettre à jour le cercle sur la carte
+                if (radiusCircle) {
+                    radiusCircle.setRadius(this.value * 1000);
+                }
+            });
+        }
+        
+        // Gestionnaire du bouton de géolocalisation
+        if (useCurrentLocationBtn) {
+            useCurrentLocationBtn.addEventListener('click', function() {
+                if (navigator.geolocation) {
+                    locationStatus.textContent = "Localisation en cours...";
+                    locationStatus.style.color = "#3b82f6";
+                    useCurrentLocationBtn.disabled = true;
+                    
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            // Récupération des coordonnées
+                            userLatitude = position.coords.latitude;
+                            userLongitude = position.coords.longitude;
+                            
+                            // Mise à jour des champs cachés
+                            userLatitudeInput.value = userLatitude;
+                            userLongitudeInput.value = userLongitude;
+                            
+                            // Affichage de la carte et des contrôles supplémentaires
+                            initMap(userLatitude, userLongitude);
+                            radiusGroup.style.display = 'block';
+                            travelModeGroup.style.display = 'block';
+                            
+                            // Mise à jour du statut
+                            locationStatus.textContent = "Position actuelle utilisée";
+                            locationStatus.style.color = "#10b981";
+                            useCurrentLocationBtn.disabled = false;
+                            
+                            // Activer la recherche par proximité
+                            enableProximitySearch();
+                        },
+                        function(error) {
+                            console.error("Erreur de géolocalisation:", error);
+                            let errorMsg = "Erreur de localisation";
+                            
+                            switch(error.code) {
+                                case error.PERMISSION_DENIED:
+                                    errorMsg = "Accès à la géolocalisation refusé";
+                                    break;
+                                case error.POSITION_UNAVAILABLE:
+                                    errorMsg = "Position indisponible";
+                                    break;
+                                case error.TIMEOUT:
+                                    errorMsg = "Délai d'attente dépassé";
+                                    break;
+                            }
+                            
+                            locationStatus.textContent = errorMsg;
+                            locationStatus.style.color = "#ef4444";
+                            useCurrentLocationBtn.disabled = false;
+                            
+                            // Désactiver la recherche par proximité
+                            disableProximitySearch();
+                        },
+                        {
+                            enableHighAccuracy: true,
+                            timeout: 10000,
+                            maximumAge: 0
+                        }
+                    );
+                } else {
+                    locationStatus.textContent = "Géolocalisation non supportée";
+                    locationStatus.style.color = "#ef4444";
+                }
+            });
+        }
+        
+        // Initialisation de la carte Leaflet
+        function initMap(lat, lng) {
+            // mapElement.style.display = 'block'; // SUPPRIMÉ, seul max-height contrôle l'affichage
+            if (!map) {
+                map = L.map('map-filtre').setView([lat, lng], 13);
+                
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                }).addTo(map);
+                
+                // Ajout du marqueur utilisateur
+                userMarker = L.marker([lat, lng], {
+                    draggable: true,
+                    icon: L.divIcon({
+                        className: 'user-location-marker',
+                        html: '<div class="marker-pin"></div>',
+                        iconSize: [30, 42],
+                        iconAnchor: [15, 42]
+                    })
+                }).addTo(map);
+                
+                // Mise à jour des coordonnées si l'utilisateur déplace le marqueur
+                userMarker.on('dragend', function(e) {
+                    const newPos = userMarker.getLatLng();
+                    userLatitude = newPos.lat;
+                    userLongitude = newPos.lng;
+                    userLatitudeInput.value = userLatitude;
+                    userLongitudeInput.value = userLongitude;
+                    
+                    // Mettre à jour le cercle
+                    if (radiusCircle) {
+                        radiusCircle.setLatLng(newPos);
+                    }
+                });
+                
+                // Ajout d'un cercle pour le rayon de recherche
+                radiusCircle = L.circle([lat, lng], {
+                    color: '#3b82f6',
+                    fillColor: '#3b82f6',
+                    fillOpacity: 0.2,
+                    radius: searchRadiusInput.value * 1000
+                }).addTo(map);
+            } else {
+                map.setView([lat, lng], 13);
+                userMarker.setLatLng([lat, lng]);
+                
+                if (radiusCircle) {
+                    radiusCircle.setLatLng([lat, lng]);
+                    radiusCircle.setRadius(searchRadiusInput.value * 1000);
+                }
+            }
+        }
+        
+        // Active la recherche par proximité
+        function enableProximitySearch() {
+            console.log("Recherche par proximité activée");
+        }
+        
+        // Désactive la recherche par proximité
+        function disableProximitySearch() {
+            userLatitudeInput.value = '';
+            userLongitudeInput.value = '';
+            // Ne pas masquer les groupes radius/travel/map ici
+            console.log("Recherche par proximité désactivée");
+        }
+        
+        // Réinitialisation de la recherche
+        const resetBtn = document.querySelector('.nh6b2_reset_btn');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+                disableProximitySearch();
+                if (map) {
+                    map.remove();
+                    map = null;
+                }
+                locationStatus.textContent = '';
+            });
+        }
+        
+        // Réinitialisation complète
+        const resetSearchBtn = document.querySelector('.zx5c8_reset_search');
+        if (resetSearchBtn) {
+            resetSearchBtn.addEventListener('click', function() {
+                window.location.href = window.location.pathname;
+            });
+        }
+        
+        // Gestion des onglets de recherche
+        const tabButtons = document.querySelectorAll('.hd2j6_tab_btn');
+        const searchPanels = document.querySelectorAll('.fm6p9_search_panel');
+        const searchModeInput = document.getElementById('search_mode');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const target = this.dataset.target;
+                
+                // Mettre à jour les onglets actifs
+                tabButtons.forEach(btn => btn.classList.remove('hd2j6_active'));
+                this.classList.add('hd2j6_active');
+                
+                // Mettre à jour les panneaux visibles
+                searchPanels.forEach(panel => {
+                    if (panel.id === target) {
+                        panel.classList.add('fm6p9_active');
+                    } else {
+                        panel.classList.remove('fm6p9_active');
+                    }
+                });
+                
+                // Mettre à jour le mode de recherche
+                searchModeInput.value = target === 'direct-search' ? 'direct' : 'step';
+            });
+        });
+        
+        // Gestion des filtres avancés
+        const toggleFiltersBtn = document.getElementById('toggleFilters');
+        const advancedFilters = document.getElementById('advancedFilters');
+        
+        if (toggleFiltersBtn) {
+            toggleFiltersBtn.addEventListener('click', function() {
+                this.classList.toggle('nh6b2_active');
+                advancedFilters.classList.toggle('nh6b2_hidden');
+            });
+        }
+        
+        // Gestion des horaires
+        const scheduleToggles = document.querySelectorAll('.zx5c8_schedule_toggle');
+        
+        scheduleToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                // Cherche la ligne parente (tr) puis la ligne suivante (panel)
+                const tr = this.closest('tr');
+                const nextTr = tr.nextElementSibling;
+                if (nextTr && nextTr.classList.contains('nh6b2_schedule_panel')) {
+                    if (nextTr.style.display === 'table-row') {
+                        nextTr.style.display = 'none';
+                        this.textContent = 'Voir les horaires';
+                        this.classList.remove('fw-bold');
+                    } else {
+                        nextTr.style.display = 'table-row';
+                        this.textContent = 'Masquer les horaires';
+                        this.classList.add('fw-bold');
+                    }
+                }
+            });
+        });
+        
+        // --- Toggle geolocalisation details (corrigé) ---
+        const toggleGeolocBtn = document.getElementById('toggleGeolocDetails');
+        const geolocChevron = toggleGeolocBtn ? toggleGeolocBtn.querySelector('.geoloc-chevron') : null;
+        const geolocDetails = document.getElementById('geolocDetails');
+        let geolocOpen = false;
+
+        function setGeolocDetails(open) {
+            geolocOpen = open;
+            if (open) {
+                geolocDetails.classList.add('open');
+                if (geolocChevron) geolocChevron.style.transform = 'rotate(180deg)';
+                if (toggleGeolocBtn) toggleGeolocBtn.setAttribute('aria-expanded', 'true');
+            } else {
+                geolocDetails.classList.remove('open');
+                if (geolocChevron) geolocChevron.style.transform = 'rotate(0deg)';
+                if (toggleGeolocBtn) toggleGeolocBtn.setAttribute('aria-expanded', 'false');
+            }
+        }
+
+        if (toggleGeolocBtn) {
+            toggleGeolocBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                setGeolocDetails(!geolocOpen);
+            });
+        }
+
+        // Initialisation à l'ouverture de la page
+        setGeolocDetails(false);
+        if (useCurrentLocationBtn) {
+            useCurrentLocationBtn.addEventListener('click', function() {
+                setGeolocDetails(true);
+            });
+        }
+        // Message d'aide si la section ne s'affiche pas
+        setTimeout(function() {
+            if (!geolocDetails || geolocDetails.style.maxHeight === '0px') {
+                console.warn('La section géolocalisation ne s\'affiche pas. Vérifiez le HTML et le JS.');
+            }
+        }, 2000);
+
+        // Initialisation dynamique de la carte Leaflet dans le modal profil
+        var modals = document.querySelectorAll('.modal');
+        modals.forEach(function(modal) {
+            modal.addEventListener('shown.bs.modal', function (event) {
+                var mapDiv = modal.querySelector('.map-modal');
+                if (mapDiv && !mapDiv.classList.contains('leaflet-container')) {
+                    var lat = parseFloat(mapDiv.getAttribute('data-lat')) || 48.8566;
+                    var lng = parseFloat(mapDiv.getAttribute('data-lng')) || 2.3522;
+                    var map = L.map(mapDiv).setView([lat, lng], 15);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; OpenStreetMap contributors'
+                    }).addTo(map);
+                    L.marker([lat, lng]).addTo(map);
+                }
+            });
+        });
+    });
+    </script>
+    <style>
+    /* Animation pour la section géolocalisation */
+    .geoloc-details-collapse {
+        overflow: hidden !important;
+        transition: max-height 0.4s cubic-bezier(.4,0,.2,1);
+        max-height: 0 !important;
+        display: block !important;
+    }
+    .geoloc-details-collapse.open {
+        max-height: 600px !important;
+    }
+    /* Styles pour la géolocalisation */
+    .rq9t2_location_btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 15px;
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+    
+    .rq9t2_location_btn:hover {
+        background-color: #2563eb;
+    }
+    
+    .rq9t2_location_btn:disabled {
+        background-color: #93c5fd;
+        cursor: not-allowed;
+    }
+    
+    .zx5c8_location_status {
+        margin-left: 10px;
+        font-size: 14px;
+    }
+    
+    /* Styles pour le marqueur sur la carte */
+    .user-location-marker {
+        position: relative;
+    }
+    
+    .marker-pin {
+        width: 30px;
+        height: 30px;
+        border-radius: 50% 50% 50% 0;
+        background: #3b82f6;
+        position: absolute;
+        transform: rotate(-45deg);
+        left: 50%;
+        top: 50%;
+        margin: -15px 0 0 -15px;
+    }
+    
+    .marker-pin::after {
+        content: '';
+        width: 20px;
+        height: 20px;
+        margin: 5px 0 0 5px;
+        background: white;
+        position: absolute;
+        border-radius: 50%;
+    }
+    
+    /* Styles pour le slider de rayon */
+    .rq9t2_range {
+        width: 100%;
+        height: 8px;
+        border-radius: 4px;
+        background: #e2e8f0;
+        outline: none;
+        -webkit-appearance: none;
+    }
+    
+    .rq9t2_range::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #3b82f6;
+        cursor: pointer;
+    }
+    
+    .rq9t2_range::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #3b82f6;
+        cursor: pointer;
+        border: none;
+    }
+    
+    #radius_value {
+        display: inline-block;
+        margin-left: 10px;
+        font-weight: 500;
+        color: #3b82f6;
+    }
+    
+    /* Styles pour les badges de distance et durée */
+    .kp3j7_distance_info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 8px;
+    }
+    
+    .rq9t2_distance_badge, .rq9t2_duration_badge {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+    }
+    
+    .rq9t2_distance_badge {
+        background-color: #e0f2fe;
+        color: #0284c7;
+    }
+    
+    .rq9t2_duration_badge {
+        background-color: #dcfce7;
+        color: #16a34a;
+    }
+    
+    .zx5c8_estimated_tag {
+        font-size: 10px;
+        opacity: 0.7;
+        margin-left: 4px;
+    }
+    
+    /* Lien d'itinéraire */
+    .zx5c8_directions_link {
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.2s;
+    }
+    
+    .zx5c8_directions_link:hover {
+        color: #2563eb;
+        text-decoration: underline;
+    }
+    
+    /* Ajout pour la table praticiens */
+    .table th, .table td { vertical-align: middle; }
+    .table td .btn, .table td .btn-outline-secondary { min-width: 120px; }
+    .table td .btn + .btn { margin-left: 0.5rem; }
+    .table .zx5c8_schedule_toggle { cursor: pointer; }
+    .table .rounded-circle { width: 40px; height: 40px; object-fit: cover; }
+    .table .bg-primary { background-color: #3b82f6 !important; }
+    .table .text-primary { color: #3b82f6 !important; }
+    .table .fw-bold { font-weight: 600; }
+    .table .text-end { text-align: right; }
+    .table .d-inline-flex { display: inline-flex !important; }
+    .table .me-2 { margin-right: 0.5rem !important; }
+    .rq9t2_location_btn.w-100 { width: 100%; display: flex; justify-content: center; }
+    @media (max-width: 600px) {
+      .qs8w3_search_form .d-flex.align-items-center { flex-direction: column !important; align-items: stretch !important; }
+      .qs8w3_search_form .d-flex.align-items-center > * { width: 100%; margin-bottom: 0.5rem; }
+    }
+
+    .stylish-search-form {
+      background: none;
+    }
+    .stylish-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 0.4rem;
+    }
+    .stylish-input-group {
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+      overflow: hidden;
+    }
+    .stylish-input-icon {
+      background: #f3f4f6;
+      border: none;
+      border-radius: 0.75rem 0 0 0.75rem;
+      padding-right: 0.5rem;
+    }
+    .stylish-input {
+      border-radius: 0 0.75rem 0.75rem 0;
+      border: none;
+      background: #fff;
+      font-size: 1rem;
+      box-shadow: none;
+      padding-left: 0.5rem;
+    }
+    .stylish-input:focus {
+      box-shadow: 0 0 0 2px #3b82f6;
+      border: none;
+    }
+    .stylish-location-btn {
+      border-radius: 0.75rem;
+      font-weight: 500;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+      transition: background 0.2s, box-shadow 0.2s;
+      margin-bottom: 0.2rem;
+    }
+    .stylish-location-btn:hover {
+      background: #2563eb;
+      box-shadow: 0 4px 16px rgba(59,130,246,0.13);
+    }
+    .stylish-action-row > * {
+      border-radius: 0.75rem !important;
+      min-width: 120px;
+      font-size: 1rem;
+      box-shadow: 0 2px 8px rgba(59,130,246,0.07);
+      transition: box-shadow 0.2s;
+    }
+    .stylish-action-row > *:hover {
+      box-shadow: 0 4px 16px rgba(59,130,246,0.13);
+    }
+    .stylish-search-btn {
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    .stylish-reset-btn {
+      background: #fff;
+      color: #4b5563;
+      border: 1.5px solid #e5e7eb;
+    }
+    .stylish-reset-btn:hover {
+      background: #f3f4f6;
+      color: #1f2937;
+    }
+    .stylish-advanced-btn {
+      color: #3b82f6;
+      font-weight: 500;
+      background: none;
+      border: none;
+      min-width: 110px;
+    }
+    .stylish-advanced-btn:hover {
+      color: #2563eb;
+      background: #f3f4f6;
+    }
+    @media (max-width: 600px) {
+      .stylish-action-row { flex-direction: column !important; align-items: stretch !important; }
+      .stylish-action-row > * { width: 100%; margin-bottom: 0.5rem; }
+      .stylish-search-form { padding: 0.5rem; }
+    }
+
+    .horizontal-search-form .d-flex { flex-wrap: wrap; gap: 1rem; }
+    .horizontal-search-form .form-control { min-width: 180px; }
+    .horizontal-search-form label { font-weight: 600; }
+    .horizontal-search-form .stylish-advanced-btn { min-width: 120px; }
+    .horizontal-search-form .stylish-reset-btn, .horizontal-search_form .stylish-search-btn { min-width: 120px; }
+    @media (max-width: 900px) {
+      .horizontal-search-form .d-flex { flex-direction: column !important; align-items: stretch !important; }
+      .horizontal-search-form .d-flex > * { width: 100%; }
+    }
+
+    .no-side-padding { padding-left: 0 !important; padding-right: 0 !important; }
+    .wide-results-section {
+        max-width: 100%;
+        width: 100%;
+        margin: 0 auto 2rem auto;
+        background: #fff;
+        border-radius: 1rem;
+        box-shadow: 0 4px 24px rgba(59,130,246,0.07);
+        padding: 2.5rem 2.5rem 2rem 2.5rem;
+    }
+    .custom-table-responsive {
+        overflow-x: auto;
+        min-width: 0;
+    }
+    .pro-table {
+        width: 100%;
+        min-width: 700px;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 1.08rem;
+    }
+    .pro-table th, .pro-table td {
+        padding: 1.1rem 1.2rem;
+        border-bottom: 1px solid #e5e7eb;
+        background: #fff;
+    }
+    .pro-table th {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1f2937;
+        background: #f3f4f6;
+        border-top: none;
+    }
+    .pro-table td {
+        font-size: 1.05rem;
+        color: #222;
+    }
+    .pro-table tr:last-child td {
+        border-bottom: none;
+    }
+    .pro-table .fw-bold {
+        font-weight: 700;
+        color: #1f2937;
+    }
+    .xz2v8_results_header.better-align {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+    .gt7h3_section_title {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0;
+    }
+    .kp3j7_results_count {
+        font-size: 1.1rem;
+        color: #3b82f6;
+        font-weight: 600;
+        margin-bottom: 0;
+    }
+    @media (max-width: 1100px) {
+        .real-full-width-section { padding: 1.2rem 0.5rem; }
+        .pro-table th, .pro-table td { padding: 0.7rem 0.5rem; }
+    }
+    @media (max-width: 700px) {
+        .pro-table { min-width: 0; font-size: 0.98rem; }
+        .real-full-width-section { padding: 0.5rem 0.2rem; }
+        .xz2v8_results_header.better-align { flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+    }
+
+    .nh6b2_toggle_geoloc {
+        transition: color 0.2s;
+    }
+    .nh6b2_toggle_geoloc:hover {
+        color: #3b82f6;
+    }
+    .zx5c8_profile_btn.btn-primary {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: #fff !important;
+    }
+    .zx5c8_profile_btn.btn-primary:hover {
+        background-color: #2563eb !important;
+        border-color: #2563eb !important;
+    }
+    .vm4k9_submit_btn.btn-primary {
+        background-color: #3b82f6 !important;
+        border-color: #3b82f6 !important;
+        color: #fff !important;
+    }
+    .vm4k9_submit_btn.btn-primary:hover {
+        background-color: #2563eb !important;
+        border-color: #2563eb !important;
+    }
+    </style>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+          --primary-color: #3b82f6;
+          --primary-dark: #2563eb;
+          --primary-light: #60a5fa;
+          --secondary-color: #10b981;
+          --secondary-dark: #059669;
+          --text-primary: #1f2937;
+          --text-secondary: #4b5563;
+          --text-light: #6b7280;
+          --bg-primary: #ffffff;
+          --bg-secondary: #f3f4f6;
+          --bg-tertiary: #f9fafb;
+          --border-color: #e5e7eb;
+          --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+          --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+          --radius-sm: 0.25rem;
+          --radius: 0.5rem;
+          --radius-md: 0.75rem;
+          --radius-lg: 1rem;
+          --transition: all 0.2s ease;
+        }
+
+        /* Base styles */
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          color: var(--text-primary);
+          background-color: #def4ff; /* Adjust for the fixed navbar */
+          line-height: 1.5;
+        }
+
+        .xk7p2_container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 2rem 1rem;
+        }
+
+        /* Header */
+        .qm3j8_header {
+          text-align: center;
+          margin-bottom: 2rem;
+        }
+
+        .zt5v9_title {
+          font-size: 2.25rem;
+          font-weight: 700;
+          color: var(--text-primary);
+          margin-bottom: 0.5rem;
+        }
+
+        .lp6r4_subtitle {
+          font-size: 1.125rem;
+          color: var(--text-secondary);
+          max-width: 700px;
+          margin: 0 auto;
+        }
+
+        /* Flash messages */
+        .gf2h7_flash_container {
+          margin-bottom: 1.5rem;
+        }
+
+        .yw9k1_flash_error {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          background-color: #fee2e2;
+          color: #b91c1c;
+          padding: 1rem;
+          border-radius: var(--radius);
+          border-left: 4px solid #ef4444;
+        }
+
+        /* Content wrapper */
+        .cp8m3_content_wrapper {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        @media (min-width: 1024px) {
+          .cp8m3_content_wrapper {
+            grid-template-columns: 350px 1fr;
+            align-items: start;
+          }
+        }
+
+        /* Search section */
+        .jt7r2_search_section {
+          top: 2rem;
+        }
+
+        .vb5n8_search_card {
+          background-color: var(--bg-primary);
+          border-radius: var(--radius-md);
+          box-shadow: var(--shadow);
+          overflow: hidden;
+        }
+
+        /* Search tabs */
+        .ek9p4_search_tabs {
+          display: flex;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .hd2j6_tab_btn {
+          flex: 1;
+          background: none;
+          border: none;
+          padding: 1rem;
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: var(--text-secondary);
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          transition: var(--transition);
+          border-bottom: 2px solid transparent;
+        }
+
+        .hd2j6_tab_btn:hover {
+          color: var(--primary-color);
+          background-color: var(--bg-tertiary);
+        }
+
+        .hd2j6_tab_btn.hd2j6_active {
+          color: var(--primary-color);
+          border-bottom-color: var(--primary-color);
+        }
+
+        .bn4t6_icon {
+          width: 1.25rem;
+          height: 1.25rem;
+        }
+
+        /* Search form */
+        .qs8w3_search_form {
+          padding: 1.5rem;
+        }
+
+        .fm6p9_search_panel {
+          display: none;
+        }
+
+        .fm6p9_search_panel.fm6p9_active {
+          display: block;
+        }
+
+        .uy4k7_form_group {
+          margin-bottom: 1.25rem;
+        }
+        a{
+          text-decoration: none;
+        }
+        a:hover{
+          text-decoration: none;
+        }
+        .xz2v8_label {
+          display: block;
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: var(--text-secondary);
+          margin-bottom: 0.5rem;
+        }
+
+        .gt7h3_input_wrapper {
+          position: relative;
+        }
+
+        .kp3j7_input_icon {
+          position: absolute;
+          left: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 1.25rem;
+          height: 1.25rem;
+          color: var(--text-light);
+        }
+
+        .rq9t2_input {
+          width: 100%;
+          padding: 0.75rem 0.5rem 0.75rem 2.5rem;
+          font-size: 0.95rem;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius);
+          background-color: var(--bg-primary);
+          color: var(--text-primary);
+          transition: var(--transition);
+        }
+
+        .rq9t2_input:focus {
+          outline: none;
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+        }
+
+        .rq9t2_input::placeholder {
+          color: var(--text-light);
+        }
+
+        /* Step container */
+        .zx5c8_step_container {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        /* Advanced filters */
+        .vm4k9_advanced_filters {
+          margin-top: 1.5rem;
+          border-top: 1px solid var(--border-color);
+          padding-top: 1.5rem;
+        }
+
+        .nh6b2_toggle_filters {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          background: none;
+          border: none;
+          padding: 0.75rem;
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: var(--text-secondary);
+          cursor: pointer;
+          border-radius: var(--radius);
+          transition: var(--transition);
+          margin-bottom: 1rem;
+        }
+
+        .nh6b2_toggle_filters:hover {
+          background-color: var(--bg-tertiary);
+          color: var(--primary-color);
+        }
+
+        .nh6b2_toggle_filters .bn4t6_icon {
+          transition: var(--transition);
+        }
+
+        .nh6b2_toggle_filters.nh6b2_active .bn4t6_icon {
+          transform: rotate(180deg);
+        }
+
+        .vm4k9_filter_grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        @media (min-width: 640px) {
+          .vm4k9_filter_grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        .nh6b2_hidden {
+          display: none;
+        }
+
+        /* Search actions */
+        .zx5c8_search_actions {
+          display: flex;
+          gap: 1rem;
+          margin-top: 1.5rem;
+        }
+
+        .nh6b2_reset_btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          background: none;
+          border: 1px solid var(--border-color);
+          border-radius: var(--radius);
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: var(--text-secondary);
+          cursor: pointer;
+          transition: var(--transition);
+        }
+
+        .nh6b2_reset_btn:hover {
+          background-color: var(--bg-tertiary);
+          color: var(--text-primary);
+        }
+
+        .vm4k9_submit_btn {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.75rem 1rem;
+          background-color: var(--primary-color);
+          border: none;
+          border-radius: var(--radius);
+          font-size: 0.95rem;
+          font-weight: 500;
+          color: white;
+          cursor: pointer;
+          transition: var(--transition);
+        }
+
+        .vm4k9_submit_btn:hover {
+          background-color: var(--primary-dark);
+        }
+
+        /* Results section */
+        .uy4k7_results_section {
+          background-color: var(--bg-primary);
+          border-radius: var(--radius-md);
+          box-shadow: var(--shadow);
+          padding: 1.5rem;
+        }
+
+        .xz2v8_results_header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 1.5rem;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .gt7h3_section_title {
+          font-size: 1.5rem;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+
+        .kp3j7_results_count {
+          font-size: 0.95rem;
+          color: var(--text-secondary);
+        }
+
+        /* Results grid */
+        .rq9t2_results_grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+          .rq9t2_results_grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        @media (min-width: 1200px) {
+          .rq9t2_results_grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+
+        /* Professional card */
+        .zx5c8_pro_card {
+          background-color: var(--bg-primary);
+          border-radius: var(--radius);
+          border: 1px solid var(--border-color);
+          overflow: hidden;
+          transition: var(--transition);
+        }
+
+        .zx5c8_pro_card:hover {
+          box-shadow: var(--shadow-md);
+          transform: translateY(-2px);
+        }
+
+        .nh6b2_pro_header {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+          padding: 1.25rem;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .vm4k9_pro_avatar {
+          width: 3rem;
+          height: 3rem;
+          background-color: var(--primary-light);
+          color: white;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.25rem;
+          font-weight: 600;
+        }
+
+        .uy4k7_pro_info {
+          flex: 1;
+        }
+
+        .xz2v8_pro_name {
+          font-size: 1.125rem;
+          font-weight: 600;
+          color: var(--text-primary);
+          margin-bottom: 0.25rem;
+        }
+
+        .gt7h3_pro_specialty {
+          font-size: 0.875rem;
+          color: var(--text-secondary);
+        }
+
+        .kp3j7_pro_details {
+          padding: 1rem 1.25rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .rq9t2_detail_item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          font-size: 0.95rem;
+          color: var(--text-secondary);
+        }
+
+        .zx5c8_schedule_toggle {
+          color: var(--primary-color);
+          cursor: pointer;
+          font-weight: 500;
+        }
+
+        .zx5c8_schedule_toggle:hover {
+          text-decoration: underline;
+        }
+
+        .nh6b2_schedule_panel {
+          display: none;
+          padding: 0 1.25rem 1rem;
+          border-bottom: 1px solid var(--border-color);
+        }
+
+        .vm4k9_schedule_grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+          gap: 0.5rem;
+        }
+
+        .uy4k7_schedule_day {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          padding: 0.5rem;
+          background-color: var(--bg-tertiary);
+          border-radius: var(--radius-sm);
+        }
+
+        .xz2v8_day_name {
+          font-size: 0.875rem;
+          font-weight: 600;
+          color: var(--text-primary);
+        }
+
+        .gt7h3_day_hours {
+          font-size: 0.75rem;
+          color: var(--text-secondary);
+        }
+
+        .kp3j7_no_schedule {
+          text-align: center;
+          padding: 1rem;
+          color: var(--text-light);
+          font-style: italic;
+        }
+
+        .rq9t2_pro_actions {
+          display: flex;
+          padding: 1.25rem;
+          gap: 0.75rem;
+        }
+
+        .zx5c8_profile_btn, .nh6b2_review_btn {
+          flex: 1;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          padding: 0.75rem;
+          border-radius: var(--radius);
+          font-size: 0.95rem;
+          font-weight: 500;
+          text-decoration: none;
+          transition: var(--transition);
+        }
+
+        .zx5c8_profile_btn {
+          background-color: var(--primary-color);
+          color: white;
+        }
+
+        .zx5c8_profile_btn:hover {
+          background-color: var(--primary-dark);
+        }
+
+        .nh6b2_review_btn {
+          background-color: var(--bg-tertiary);
+          color: var(--text-secondary);
+        }
+
+        .nh6b2_review_btn:hover {
+          background-color: var(--border-color);
+          color: var(--text-primary);
+        }
+
+        /* Pagination */
+        .vm4k9_pagination {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 1rem;
+          margin-top: 2rem;
+        }
+
+        .uy4k7_page_btn {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          background-color: var(--bg-tertiary);
+          border-radius: var(--radius);
+          font-size: 0.95rem;
+          color: var(--text-secondary);
+          text-decoration: none;
+          transition: var(--transition);
+        }
+
+        .uy4k7_page_btn:hover {
+          background-color: var(--border-color);
+          color: var(--text-primary);
+        }
+
+        .xz2v8_page_numbers {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .gt7h3_page_link, .gt7h3_page_current, .gt7h3_page_dots {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 2.5rem;
+          height: 2.5rem;
+          border-radius: var(--radius);
+          font-size: 0.95rem;
+        }
+
+        .gt7h3_page_link {
+          background-color: var(--bg-tertiary);
+          color: var(--text-secondary);
+          text-decoration: none;
+          transition: var(--transition);
+        }
+
+        .gt7h3_page_link:hover {
+          background-color: var(--border-color);
+          color: var(--text-primary);
+        }
+
+        .gt7h3_page_current {
+          background-color: var(--primary-color);
+          color: white;
+          font-weight: 500;
+        }
+
+        .gt7h3_page_dots {
+          color: var(--text-light);
+        }
+
+        /* No results */
+        .kp3j7_no_results {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+          padding: 3rem 1rem;
+        }
+
+        .rq9t2_no_results_icon {
+          width: 4rem;
+          height: 4rem;
+          color: var(--text-light);
+          margin-bottom: 1.5rem;
+        }
+
+        .kp3j7_no_results h3 {
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: var(--text-primary);
+          margin-bottom: 0.5rem;
+        }
+
+        .kp3j7_no_results p {
+          color: var(--text-secondary);
+          margin-bottom: 1.5rem;
+          max-width: 400px;
+        }
+
+        .zx5c8_reset_search {
+          padding: 0.75rem 1.5rem;
+          background-color: var(--primary-color);
+          color: white;
+          border: none;
+          border-radius: var(--radius);
+          font-size: 0.95rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: var(--transition);
+        }
+
+        .zx5c8_reset_search:hover {
+          background-color: var(--primary-dark);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .zx5c8_pro_card {
+          animation: fadeIn 0.3s ease-out;
+        }
+
+        .zx5c8_pro_card:nth-child(2) {
+          animation-delay: 0.1s;
+        }
+
+        .zx5c8_pro_card:nth-child(3) {
+          animation-delay: 0.2s;
+        }
+    </style>
+{% endblock %}

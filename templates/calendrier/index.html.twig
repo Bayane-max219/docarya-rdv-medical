@@ -1,0 +1,921 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Disponibilités de {{ professionnel.nom }}{% endblock %}
+
+  {% block stylesheets %}
+    {{ parent() }}
+<style>
+  :root {
+  --primary-color: #3b82f6;
+  --primary-dark: #2563eb;
+  --primary-light: #93c5fd;
+  --secondary-color: #10b981;
+  --secondary-dark: #059669;
+  --secondary-light: #6ee7b7;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --danger: #ef4444;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --white: #ffffff;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --radius-sm: 0.125rem;
+  --radius: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: var(--gray-800);
+  line-height: 1.5;
+}
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Container */
+.disponibilites-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Header Section */
+.header-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.pro-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pro-avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-color);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.pro-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.pro-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 0.25rem;
+}
+
+.pro-specialty {
+  font-size: 1rem;
+  color: var(--gray-600);
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--white);
+  border: 1px solid var(--gray-300);
+  border-radius: var(--radius);
+  color: var(--gray-700);
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+}
+
+.back-btn:hover {
+  background-color: var(--gray-100);
+  border-color: var(--gray-400);
+}
+
+/* Main Content */
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .main-content {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+/* Calendar Section */
+.calendar-section {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.month-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--gray-800);
+  min-width: 10rem;
+  text-align: center;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--gray-300);
+  background-color: var(--white);
+  color: var(--gray-700);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+  background-color: var(--gray-100);
+  border-color: var(--gray-400);
+}
+
+.calendar-grid {
+  padding: 1.5rem;
+}
+
+.weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.weekday {
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  padding: 0.5rem 0;
+}
+
+.days-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+
+.day {
+  position: relative;
+  height: 3rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.day:hover {
+  background-color: var(--gray-100);
+  border-color: var(--gray-300);
+}
+
+.day.selected {
+  background-color: var(--primary-light);
+  border-color: var(--primary-color);
+  color: var(--primary-dark);
+  font-weight: 600;
+}
+
+.day.today {
+  border-color: var(--primary-color);
+  font-weight: 600;
+}
+
+.day.disabled {
+  background-color: var(--gray-100);
+  color: var(--gray-400);
+  cursor: not-allowed;
+  border-color: var(--gray-200);
+}
+
+.day.has-slots .availability-indicator {
+  position: absolute;
+  bottom: 0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: var(--radius-full);
+  background-color: var(--secondary-color);
+}
+
+.day-number {
+  font-size: 0.875rem;
+}
+
+/* Time Slots */
+.time-slots {
+  padding: 1.5rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+.slots-header {
+  margin-bottom: 1rem;
+}
+
+.date-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--gray-800);
+}
+
+.slots-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  gap: 0.75rem;
+  max-height: 20rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.no-slots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  text-align: center;
+  color: var(--gray-500);
+  grid-column: 1 / -1;
+}
+
+.slot-item {
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-300);
+  background-color: var(--white);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.slot-item:hover {
+  border-color: var(--primary-color);
+  background-color: var(--gray-100);
+}
+
+.slot-item.selected {
+  background-color: var(--primary-light);
+  border-color: var(--primary-color);
+}
+
+.slot-item.unavailable {
+  background-color: var(--gray-100);
+  border-color: var(--gray-300);
+  color: var(--gray-400);
+  cursor: not-allowed;
+}
+
+.slot-time {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.slot-status {
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
+/* Appointment Form */
+.appointment-form {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.form-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.form-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 0.5rem;
+}
+
+.appointment-time {
+  font-size: 1rem;
+  color: var(--primary-color);
+  font-weight: 500;
+}
+
+.form-container {
+  padding: 1.5rem;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.form-input {
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-300);
+  background-color: var(--white);
+  font-size: 1rem;
+  width: 100%;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.form-error {
+  font-size: 0.75rem;
+  color: var(--danger);
+  margin-top: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2rem;
+}
+
+.cancel-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-300);
+  background-color: var(--white);
+  color: var(--gray-700);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background-color: var(--gray-100);
+  border-color: var(--gray-400);
+}
+
+.submit-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--primary-dark);
+  background-color: var(--primary-color);
+  color: var(--white);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submit-btn:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .header-section {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .actions {
+    width: 100%;
+  }
+  
+  .back-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .calendar-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .calendar-nav {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 1rem;
+  }
+  
+  .cancel-btn, .submit-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+</style>
+  
+{% endblock %}
+{% block body %}
+    <div class="disponibilites-container">
+        <div class="header-section">
+            <div class="pro-info">
+                {% if professionnel.photo != NULL %}
+                    <div class="pro-avatar">
+                        <img class="pro-avatar" src="{{ asset('uploads/professionnels/resized/' ~ professionnel.photo|replace({
+                            '.jpg': '_resized.jpg',
+                            '.png': '_resized.png',
+                            '.gif': '_resized.gif'
+                        })) }}" 
+                        alt="Photo de {{ professionnel.prenom }} {{ professionnel.nom }}" 
+                        class="profile-image"
+                        onerror="this.src='https://ui-avatars.com/api/?name= {{ professionnel.prenom|url_encode }}+{{ professionnel.nom|url_encode }}&background=3a86ff&color=fff&size=150'">
+                    </div>
+                {% else %}
+                    <div class="pro-avatar">
+                        <span>{{ professionnel.nom|first }}{{ professionnel.prenom|first }}</span>
+                    </div>
+                {% endif %}
+                <div class="pro-details">
+                    <h1 class="pro-name">Dr. {{ professionnel.nom }} {{ professionnel.prenom }}</h1>
+                    <p class="pro-specialty">{{ professionnel.specialite.nom }}</p>
+                </div>
+            </div>
+            {% if app.user and app.user.role != 'ROLE_PROFESSIONNEL_DE_SANTE' %}
+                <div class="actions">
+                    <a href="{{ path('app_search') }}" class="back-btn">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Retour à la recherche
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="main-content">
+            <div class="calendar-section">
+                <div class="calendar-header">
+                    <h2 class="section-title">Sélectionnez une date et un horaire</h2>
+                    <div class="calendar-nav">
+                        <button id="prevMonth" class="nav-btn">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M15 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <h3 id="currentMonth" class="month-title">Chargement...</h3>
+                        <button id="nextMonth" class="nav-btn">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="calendar-grid">
+                    <div class="weekdays">
+                        <div class="weekday">Lun</div>
+                        <div class="weekday">Mar</div>
+                        <div class="weekday">Mer</div>
+                        <div class="weekday">Jeu</div>
+                        <div class="weekday">Ven</div>
+                        <div class="weekday">Sam</div>
+                        <div class="weekday">Dim</div>
+                    </div>
+                    <div id="calendarDays" class="days-grid">
+                        <!-- Les jours seront générés par JavaScript -->
+                    </div>
+                </div>
+                <div id="timeSlots" class="time-slots">
+                    <div class="slots-header">
+                        <h3 id="selectedDate" class="date-title">Sélectionnez une date</h3>
+                    </div>
+                    <div id="slotsContainer" class="slots-container">
+                        <!-- Les créneaux seront générés par JavaScript -->
+                        <div class="no-slots">
+                            <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <p>Veuillez sélectionner une date pour voir les disponibilités</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="appointmentForm" class="appointment-form hidden">
+                <div class="form-header">
+                    <h2 class="form-title">Demande de Rendez-vous</h2>
+                    <p id="appointmentDateTime" class="appointment-time"></p>
+                </div>
+                <div class="form-container">
+                    {{ form_start(form, {'attr': {'class': 'form'}}) }}
+                        <div class="form-grid">
+                            <div class="form-group">
+                                {{ form_label(form.motif, 'Motif du rendez-vous', {'label_attr': {'class': 'form-label'}}) }}
+                                {{ form_widget(form.motif, {'attr': {'class': 'form-control form-textarea', 'placeholder': 'Décrivez la raison de votre demande...'}}) }}
+                                {% if form.motif.vars.errors|length > 0 %}
+                                    <div class="form-error">
+                                        {{ form_errors(form.motif) }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="form-group" style="display:none;">
+                              {{ form_widget(form.dateHeure, {'attr': {'id': 'rendez_vous_dateHeure'}}) }}
+                            </div>
+                        </div>
+                        <input type="hidden" id="selectedSlot" name="selected_slot" value="">
+                        <div class="form-actions">
+                            <button type="button" id="cancelAppointment" class="cancel-btn">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Annuler
+                            </button>
+                            <button type="submit" class="submit-btn">
+                                <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Confirmer le rendez-vous
+                            </button>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Template pour les créneaux horaires -->
+    <template id="slotTemplate">
+        <div class="slot-item" data-slot-id="" 
+        >
+            <div class="slot-time"></div>
+            <div class="slot-status"></div>
+        </div>
+    </template>
+    <!-- Template pour les jours du calendrier -->
+    <template id="dayTemplate">
+        <div class="day" data-date="">
+            <span class="day-number"></span>
+            <span class="availability-indicator"></span>
+        </div>
+    </template>
+{% endblock %}
+{% block javascripts %}
+  {{ parent() }}
+  <script>
+      // Les données des disponibilités seront injectées ici par Twig
+      const disponibilites = {{ joursDisponibles|json_encode|raw }};
+      document.addEventListener('DOMContentLoaded', function() {
+          // Éléments DOM
+          const calendarDays = document.getElementById('calendarDays');
+          const currentMonthElement = document.getElementById('currentMonth');
+          const prevMonthButton = document.getElementById('prevMonth');
+          const nextMonthButton = document.getElementById('nextMonth');
+          const selectedDateElement = document.getElementById('selectedDate');
+          const slotsContainer = document.getElementById('slotsContainer');
+          const appointmentForm = document.getElementById('appointmentForm');
+          const appointmentDateTime = document.getElementById('appointmentDateTime');
+          const cancelAppointmentButton = document.getElementById('cancelAppointment');
+          const rendezVousDateHeureInput = document.getElementById('rendez_vous_dateHeure');
+          
+          // Templates
+          const dayTemplate = document.getElementById('dayTemplate');
+          const slotTemplate = document.getElementById('slotTemplate');
+          
+          // Variables d'état
+          let currentDate = new Date();
+          let currentMonth = currentDate.getMonth();
+          let currentYear = currentDate.getFullYear();
+          let selectedDay = null;
+          let selectedSlot = null;
+          
+          // Noms des mois en français
+          const monthNames = [
+              'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
+              'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+          ];
+
+          // Initialisation
+          renderCalendar();
+
+          // Événements
+          prevMonthButton.addEventListener('click', goToPrevMonth);
+          nextMonthButton.addEventListener('click', goToNextMonth);
+          cancelAppointmentButton.addEventListener('click', hideAppointmentForm);
+
+          // Fonctions principales
+          function renderCalendar() {
+              currentMonthElement.textContent = `${monthNames[currentMonth]} ${currentYear}`;
+              calendarDays.innerHTML = '';
+              
+              const firstDay = new Date(currentYear, currentMonth, 1);
+              const lastDay = new Date(currentYear, currentMonth + 1, 0);
+              
+              let startingDay = firstDay.getDay() - 1;
+              if (startingDay === -1) startingDay = 6;
+              
+              for (let i = 0; i < startingDay; i++) {
+                  const emptyDay = document.createElement('div');
+                  emptyDay.className = 'day disabled';
+                  calendarDays.appendChild(emptyDay);
+              }
+              
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+              
+              for (let day = 1; day <= lastDay.getDate(); day++) {
+                  const date = new Date(currentYear, currentMonth, day);
+                  const dateString = formatDate(date);
+                  
+                  const dayElement = dayTemplate.content.cloneNode(true).querySelector('.day');
+                  dayElement.dataset.date = dateString;
+                  dayElement.querySelector('.day-number').textContent = day;
+                  
+                  if (date.getTime() === today.getTime()) {
+                      dayElement.classList.add('today');
+                  }
+                  
+                  if (date < today) {
+                      dayElement.classList.add('disabled');
+                  } else {
+                      const jourDisponible = disponibilites.find(jour => {
+                          const jourDate = new Date(jour.date.date);
+                          return jourDate.getDate() === day && 
+                                 jourDate.getMonth() === currentMonth && 
+                                 jourDate.getFullYear() === currentYear;
+                      });
+                      
+                      if (jourDisponible && jourDisponible.creneaux.length > 0) {
+                          const hasAvailableSlots = jourDisponible.creneaux.some(creneau => creneau.disponible);
+                          if (hasAvailableSlots) {
+                              dayElement.classList.add('has-slots');
+                              const indicator = dayElement.querySelector('.availability-indicator');
+                              if (indicator) {
+                                  indicator.style.display = 'block';
+                              }
+                          }
+                      }
+                      
+                      dayElement.addEventListener('click', function() {
+                          if (!this.classList.contains('disabled')) {
+                              selectDay(this);
+                          }
+                      });
+                  }
+                  calendarDays.appendChild(dayElement);
+              }
+          }
+
+          function selectDay(dayElement) {
+              if (selectedDay) {
+                  selectedDay.classList.remove('selected');
+              }
+              
+              dayElement.classList.add('selected');
+              selectedDay = dayElement;
+              
+              const dateString = dayElement.dataset.date;
+              // Parser la date au format AAAA-MM-JJ comme date locale
+              const [year, month, day] = dateString.split('-').map(Number);
+              const date = new Date(year, month - 1, day);
+              const formattedDate = formatDateLong(date);
+              
+              selectedDateElement.textContent = formattedDate;
+              renderTimeSlots(dateString);
+              hideAppointmentForm();
+          }
+
+          function renderTimeSlots(dateString) {
+              slotsContainer.innerHTML = '';
+              // Parser la date sélectionnée comme date locale
+              const [year, month, day] = dateString.split('-').map(Number);
+              const date = new Date(year, month - 1, day);
+              const jourDisponible = disponibilites.find(jour => {
+                  const jourDate = new Date(jour.date.date);
+                  return jourDate.getDate() === date.getDate() && 
+                         jourDate.getMonth() === date.getMonth() && 
+                         jourDate.getFullYear() === date.getFullYear();
+              });
+              
+              if (jourDisponible && jourDisponible.creneaux.length > 0) {
+                  const creneaux = [...jourDisponible.creneaux].sort((a, b) => {
+                      const dateA = new Date(a.debut.date);
+                      const dateB = new Date(b.debut.date);
+                      return dateA - dateB;
+                  });
+                  
+                  creneaux.forEach((creneau, index) => {
+                      const debutDate = new Date(creneau.debut.date);
+                      const finDate = new Date(creneau.fin.date);
+                      
+                      const slotElement = slotTemplate.content.cloneNode(true).querySelector('.slot-item');
+                      slotElement.dataset.slotId = index;
+                      // Stocker les timestamps pour éviter les décalages liés aux fuseaux horaires
+                      slotElement.dataset.debut = String(debutDate.getTime());
+                      slotElement.dataset.fin = String(finDate.getTime());
+                      
+                      const heureDebut = formatTime(debutDate);
+                      const heureFin = formatTime(finDate);
+                      slotElement.querySelector('.slot-time').textContent = `${heureDebut} - ${heureFin}`;
+                      
+                      if (creneau.disponible) {
+                          slotElement.querySelector('.slot-status').textContent = 'Disponible';
+                          slotElement.addEventListener('click', function() {
+                              selectSlot(this);
+                          });
+                      } else {
+                          slotElement.classList.add('unavailable');
+                          slotElement.querySelector('.slot-status').textContent = 'Indisponible';
+                      }
+                      
+                      slotsContainer.appendChild(slotElement);
+                  });
+              } else {
+                  const noSlots = document.createElement('div');
+                  noSlots.className = 'no-slots';
+                  noSlots.innerHTML = `
+                      <svg class="icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <p>Aucun créneau disponible pour cette date</p>
+                  `;
+                  slotsContainer.appendChild(noSlots);
+              }
+          }
+
+          function selectSlot(slotElement) {
+              // Désélectionner le précédent slot si existe
+              if (selectedSlot) {
+                  selectedSlot.classList.remove('selected');
+              }
+              
+              // Sélectionner le nouveau slot
+              slotElement.classList.add('selected');
+              selectedSlot = slotElement;
+              
+              // Récupérer les dates à partir des timestamps stockés
+              const debutDate = new Date(Number(slotElement.dataset.debut));
+              const finDate = new Date(Number(slotElement.dataset.fin));
+              
+              // Formater pour l'affichage
+              const formattedDate = formatDateLong(debutDate);
+              const formattedTime = `${formatTime(debutDate)} - ${formatTime(finDate)}`;
+              appointmentDateTime.textContent = `${formattedDate} à ${formatTime(debutDate)}`;
+              
+              // Mettre à jour le champ dateHeure du formulaire
+              if (rendezVousDateHeureInput) {
+                  const year = debutDate.getFullYear();
+                  const month = String(debutDate.getMonth() + 1).padStart(2, '0');
+                  const day = String(debutDate.getDate()).padStart(2, '0');
+                  const hours = String(debutDate.getHours()).padStart(2, '0');
+                  const minutes = String(debutDate.getMinutes()).padStart(2, '0');
+                  const seconds = '00';
+                  rendezVousDateHeureInput.value = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+              } else {
+                  console.error("Champ dateHeure non trouvé dans le formulaire");
+              }
+              
+              // Afficher le formulaire pour les patients
+              if ({{ app.user and app.user.role != 'ROLE_PROFESSIONNEL_DE_SANTE' ? 'true' : 'false' }}) {
+                  showAppointmentForm();
+                  setTimeout(() => {
+                      appointmentForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                  }, 100);
+              }
+          }
+
+          // Fonctions utilitaires
+          function goToPrevMonth() {
+              currentMonth--;
+              if (currentMonth < 0) {
+                  currentMonth = 11;
+                  currentYear--;
+              }
+              renderCalendar();
+          }
+
+          function goToNextMonth() {
+              currentMonth++;
+              if (currentMonth > 11) {
+                  currentMonth = 0;
+                  currentYear++;
+              }
+              renderCalendar();
+          }
+
+          function showAppointmentForm() {
+              appointmentForm.classList.remove('hidden');
+              // Réinitialiser les erreurs de formulaire
+              const errorElements = document.querySelectorAll('.form-error');
+              errorElements.forEach(el => el.textContent = '');
+          }
+
+          function hideAppointmentForm() {
+              appointmentForm.classList.add('hidden');
+              if (selectedSlot) {
+                  selectedSlot.classList.remove('selected');
+                  selectedSlot = null;
+              }
+          }
+
+          function formatDate(date) {
+              const year = date.getFullYear();
+              const month = String(date.getMonth() + 1).padStart(2, '0');
+              const day = String(date.getDate()).padStart(2, '0');
+              return `${year}-${month}-${day}`;
+          }
+
+          function formatDateLong(date) {
+              const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+              return date.toLocaleDateString('fr-FR', options);
+          }
+
+          function formatTime(date) {
+              return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          }
+      });
+  </script>
+{% endblock %}

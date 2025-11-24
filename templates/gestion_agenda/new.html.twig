@@ -1,0 +1,300 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle indisponibilité{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary-color: #7c3aed;
+            --primary-dark: #5b21b6;
+            --secondary-color: #ec4899;
+            --secondary-dark: #be185d;
+            --accent-color: #f97316;
+
+            --light-color: #f8fafc;
+            --dark-color: #1e293b;
+            --gray-color: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        .agenda-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background-color: var(--light-color);
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            color: var(--dark-color);
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-error {
+            color: var(--accent-color);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-success {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--secondary-color);
+            border: 1px solid var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .alert-danger {
+            background-color: rgba(244, 63, 94, 0.2);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+
+        @media (max-width: 576px) {
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 1.25rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="agenda-container">
+    <h1 class="page-title">Nouvelle indisponibilité</h1>
+
+    <div class="form-card">
+        <div class="card-header">
+            <h2 class="card-title">
+                <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                Ajouter une période d'indisponibilité
+            </h2>
+        </div>
+        <div class="card-body">
+            {% if app.session.flashbag.has('error') %}
+                {% for flash_message in app.session.flashbag.get('error') %}
+                    <div class="alert alert-danger">
+                        {{ flash_message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            {{ form_start(form) }}
+                <div class="form-group">
+                    {{ form_label(form.dateDebutIndispo, 'Date et heure de début', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.dateDebutIndispo, {'attr': {'class': 'form-control'}}) }}
+                    {% if form.dateDebutIndispo.vars.errors|length > 0 %}
+                        <div class="form-error">
+                            {{ form_errors(form.dateDebutIndispo) }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form_label(form.dateFinIndispo, 'Date et heure de fin', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.dateFinIndispo, {'attr': {'class': 'form-control'}}) }}
+                    {% if form.dateFinIndispo.vars.errors|length > 0 %}
+                        <div class="form-error">
+                            {{ form_errors(form.dateFinIndispo) }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    {{ form_label(form.motif, 'Motif de l\'indisponibilité', {'label_attr': {'class': 'form-label'}}) }}
+                    {{ form_widget(form.motif, {'attr': {'class': 'form-control form-textarea', 'placeholder': 'Décrivez la raison de votre indisponibilité...'}}) }}
+                    {% if form.motif.vars.errors|length > 0 %}
+                        <div class="form-error">
+                            {{ form_errors(form.motif) }}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn btn-success">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Enregistrer
+                    </button>
+                    
+                    <a href="{{ path('app_gestion_agenda_index') }}" class="btn btn-secondary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                        Annuler
+                    </a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Amélioration de l'expérience utilisateur pour les champs de date
+            const dateInputs = document.querySelectorAll('input[type="datetime-local"]');
+            
+            dateInputs.forEach(input => {
+                // Ajouter une classe pour le style au focus
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+                
+                // Vérifier que la date de fin est après la date de début
+                if (input.id.includes('dateFinIndispo')) {
+                    const debutInput = document.querySelector('input[id*="dateDebutIndispo"]');
+                    
+                    input.addEventListener('change', function() {
+                        if (debutInput.value && this.value) {
+                            const debutDate = new Date(debutInput.value);
+                            const finDate = new Date(this.value);
+                            
+                            if (finDate <= debutDate) {
+                                alert('La date de fin doit être postérieure à la date de début.');
+                                this.value = '';
+                            }
+                        }
+                    });
+                    
+                    // Mettre à jour la date de fin minimale quand la date de début change
+                    if (debutInput) {
+                        debutInput.addEventListener('change', function() {
+                            if (this.value) {
+                                input.min = this.value;
+                            }
+                        });
+                    }
+                }
+            });
+        });
+    </script>
+{% endblock %}

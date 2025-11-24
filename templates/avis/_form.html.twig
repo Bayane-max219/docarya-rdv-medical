@@ -1,0 +1,39 @@
+<div class="avis-form">
+    {{ form_start(form) }}
+        <div class="form-group">
+            {{ form_label(form.note, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.note, {'attr': {'class': 'form-control hidden-rating-input'}}) }}
+            
+            <div class="rating-container">
+                <span class="rating-star" data-value="1">☆</span>
+                <span class="rating-star" data-value="2">☆</span>
+                <span class="rating-star" data-value="3">☆</span>
+                <span class="rating-star" data-value="4">☆</span>
+                <span class="rating-star" data-value="5">☆</span>
+            </div>
+            
+            {{ form_errors(form.note) }}
+        </div>
+        
+        <div class="form-group">
+            {{ form_label(form.commentaire, null, {'label_attr': {'class': 'form-label'}}) }}
+            {{ form_widget(form.commentaire, {'attr': {'class': 'form-textarea', 'placeholder': 'Partagez votre expérience...'}}) }}
+            {{ form_errors(form.commentaire) }}
+        </div>
+        
+        <button class="btn btn-primary" type="submit">
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+            </svg>
+            {{ button_label|default('Enregistrer') }}
+        </button>
+    {{ form_end(form) }}
+</div>
+
+<style>
+    .hidden-rating-input {
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
+    }
+</style>

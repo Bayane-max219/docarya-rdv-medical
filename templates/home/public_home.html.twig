@@ -1,0 +1,493 @@
+{% extends 'base.html.twig' %}
+{% block body %}        
+    <div class="xk7p2_container">
+        <!-- Section principale avec titre et sous-titre -->
+        <div class="qm3j8_hero">
+            <div class="hero-text">
+                <div class="hero-badges">
+                    <span class="hero-badge">Nouveau</span>
+                    <span class="hero-badge hero-badge-outline">Plateforme Docarya</span>
+                </div>
+                <h1 class="zt5v9_title">Trouvez un professionnel de santé et prenez rendez-vous en ligne!</h1>
+                <p class="lp6r4_subtitle">Rapide - Efficace - Sécurisé</p>
+                <div class="hero-actions">
+                    <a href="{{ path('app_register') }}" class="primary-cta">Créer un compte</a>
+                    <a href="#how-it-works" class="ghost-cta">Voir comment ça fonctionne</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">+500</span>
+                        <span class="hero-stat-label">patients accompagnés</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">24/7</span>
+                        <span class="hero-stat-label">prise de rendez-vous</span>
+                    </div>
+                    <div class="hero-stat">
+                        <span class="hero-stat-value">100%</span>
+                        <span class="hero-stat-label">hébergement sécurisé</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-card">
+                    <img src="{{ asset('images/Accueil.png') }}" alt="Professionnels de santé en ligne" class="hero-illustration">
+                    <div class="hero-floating-card">
+                        <p class="hero-floating-title">Prochain rendez-vous</p>
+                        <p class="hero-floating-text">Gérez vos consultations en quelques clics.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section "Comment ça fonctionne" -->
+        <div class="jt7r2_how_it_works" id="how-it-works">
+            <h2 class="vb5n8_section_title">Comment ça fonctionne ?</h2>
+            <div class="ek9p4_divider"></div>
+            <p class="hd2j6_description">Docarya pour les professionnels, c'est un ensemble de services et d'accompagnement quotidien.</p>
+            
+            <!-- Les 3 étapes -->
+            <div class="qs8w3_steps">
+                <div class="fm6p9_step">
+                    <div class="uy4k7_icon_container">
+                        <img src="{{ asset('images/contracter.png') }}" alt="Créer un compte" class="xz2v8_icon">
+                    </div>
+                    <p class="gt7h3_step_text">Je crée un compte</p>
+                </div>
+                
+                <div class="fm6p9_step">
+                    <div class="uy4k7_icon_container">
+                        <img src="{{ asset('images/utilisateur.png') }}" alt="Rechercher une spécialité" class="xz2v8_icon">
+                    </div>
+                    <p class="gt7h3_step_text">Je recherche un professionnel de santé grâce à différents critères</p>
+                </div>
+                
+                <div class="fm6p9_step">
+                    <div class="uy4k7_icon_container">
+                        <img src="{{ asset('images/rendez-vous.png') }}" alt="Prendre rendez vous" class="xz2v8_icon">
+                    </div>
+                    <p class="gt7h3_step_text">Je prends rendez-vous</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section des avantages -->
+        {# <div class="kp3j7_benefits">
+            <div class="rq9t2_benefit">
+                <div class="zx5c8_benefit_icon"></div>
+                <h3 class="nh6b2_benefit_title">Consultez un professionnel de santé</h3>
+                <p class="vm4k9_benefit_text">Filtrer par disponibilité, conventionnement et emplacement</p>
+            </div>
+            
+            <div class="rq9t2_benefit">
+                <div class="zx5c8_benefit_icon"></div>
+                <h3 class="nh6b2_benefit_title">Prendre RDV</h3>
+                <p class="vm4k9_benefit_text">Directement en ligne ou en appelant le professionnel de santé</p>
+            </div>
+            
+            <div class="rq9t2_benefit">
+                <div class="zx5c8_benefit_icon"></div>
+                <h3 class="nh6b2_benefit_title">Votre professionnel de santé</h3>
+                <p class="vm4k9_benefit_text">Un SMS de rappel avec toutes les informations pratiques est envoyé la veille de votre rendez-vous</p>
+            </div>
+            
+            <div class="rq9t2_benefit">
+                <div class="zx5c8_benefit_icon"></div>
+                <h3 class="nh6b2_benefit_title">Votre sécurité</h3>
+                <p class="vm4k9_benefit_text">Vos données sont protégées grâce à notre hébergeur agréé par le Ministère de la Santé</p>
+            </div>
+        </div> #}
+    </div>
+{% endblock %}
+{% block stylesheets %}  
+<style>
+    /* Styles généraux */
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+    }
+    .xk7p2_container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 100px 20px 60px;
+    }
+    
+    /* Section héro */
+    .qm3j8_hero {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+        gap: 48px;
+        padding: 48px 40px;
+        border-radius: 24px;
+        margin-bottom: 60px;
+        position: relative;
+        overflow: hidden;
+        background: radial-gradient(circle at top left, rgba(236, 72, 153, 0.25) 0, transparent 55%),
+                    radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.3) 0, transparent 60%),
+                    #ffffff;
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+    }
+
+    .hero-text {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .hero-badges {
+        display: inline-flex;
+        gap: 10px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background-color: rgba(253, 242, 255, 0.9);
+        border: 1px solid rgba(236, 72, 153, 0.3);
+        align-items: center;
+    }
+
+    .hero-badge {
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: linear-gradient(to right, #7c3aed, #ec4899);
+        color: #ffffff;
+    }
+
+    .hero-badge-outline {
+        background: transparent;
+        color: #7c3aed;
+        border: 1px solid rgba(124, 58, 237, 0.4);
+    }
+
+    .zt5v9_title {
+        font-size: 2.6rem;
+        line-height: 1.15;
+        color: #111827;
+        max-width: 28rem;
+    }
+
+    .lp6r4_subtitle {
+        font-size: 1.05rem;
+        color: #4b5563;
+        max-width: 26rem;
+    }
+
+    .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: center;
+    }
+
+    .primary-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 12px 26px;
+        border-radius: 999px;
+        background: linear-gradient(to right, #7c3aed, #ec4899);
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 0.98rem;
+        box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4);
+        border: none;
+    }
+
+    .primary-cta:hover {
+        filter: brightness(1.05);
+    }
+
+    .ghost-cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 11px 22px;
+        border-radius: 999px;
+        border: 1px solid rgba(148, 163, 184, 0.5);
+        color: #111827;
+        font-weight: 500;
+        font-size: 0.95rem;
+        background-color: rgba(255, 255, 255, 0.8);
+    }
+
+    .hero-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 22px;
+        margin-top: 10px;
+    }
+
+    .hero-stat {
+        min-width: 120px;
+    }
+
+    .hero-stat-value {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #7c3aed;
+        display: block;
+    }
+
+    .hero-stat-label {
+        font-size: 0.86rem;
+        color: #6b7280;
+    }
+
+    .hero-visual {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero-card {
+        position: relative;
+        border-radius: 24px;
+        padding: 20px 20px 16px;
+        background: radial-gradient(circle at top, rgba(255, 255, 255, 0.2) 0, transparent 65%),
+                    linear-gradient(145deg, #1f2937, #020617);
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.8);
+        width: 100%;
+        max-width: 360px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .hero-illustration {
+        display: block;
+        width: 100%;
+        border-radius: 18px;
+    }
+
+    .hero-floating-card {
+        padding: 6px 10px;
+        border-radius: 12px;
+        background: rgba(15, 23, 42, 0.45);
+        color: #e5e7eb;
+        font-size: 0.76rem;
+        max-width: 100%;
+    }
+
+    .hero-floating-title {
+        font-weight: 600;
+        margin-bottom: 1px;
+        font-size: 0.8rem;
+    }
+
+    .hero-floating-text {
+        opacity: 0.9;
+        font-size: 0.76rem;
+    }
+    
+    /* Barre de recherche */
+    .gf2h7_search {
+        display: flex;
+        max-width: 800px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .yw9k1_input_container {
+        display: flex;
+        flex: 1;
+    }
+    
+    .bn4t6_input {
+        flex: 1;
+        padding: 15px;
+        border: none;
+        font-size: 1rem;
+        border-right: 1px solid #eee;
+    }
+    
+    .cp8m3_button {
+        background-color: #ff8c00;
+        color: white;
+        border: none;
+        padding: 0 30px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+    
+    .cp8m3_button:hover {
+        background-color: #e67e00;
+    }
+    
+    /* Section Comment ça fonctionne */
+    .jt7r2_how_it_works {
+        text-align: left;
+        padding: 40px 32px 32px;
+        background-color: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    .vb5n8_section_title {
+        font-size: 1.9rem;
+        color: #111827;
+        margin-bottom: 8px;
+    }
+
+    .ek9p4_divider {
+        width: 70px;
+        height: 4px;
+        background: linear-gradient(to right, #7c3aed, #ec4899);
+        border-radius: 999px;
+        margin: 0 0 26px;
+    }
+
+    .hd2j6_description {
+        font-size: 1rem;
+        color: #4b5563;
+        max-width: 640px;
+        margin: 0 0 30px;
+    }
+
+    .qs8w3_steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .fm6p9_step {
+        background: radial-gradient(circle at top left, rgba(124, 58, 237, 0.08) 0, transparent 45%),
+                    #f9fafb;
+        border-radius: 18px;
+        padding: 22px 18px 20px;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .uy4k7_icon_container {
+        width: 80px;
+        height: 80px;
+        margin: 0 auto 18px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(124, 58, 237, 0.18), rgba(236, 72, 153, 0.2));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 14px;
+    }
+
+    .xz2v8_icon {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .gt7h3_step_text {
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: #111827;
+        margin-top: 4px;
+    }
+    
+    /* Section des avantages */
+    .kp3j7_benefits {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        padding: 20px;
+    }
+    
+    .rq9t2_benefit {
+        background-color: #fff;
+        border-radius: 8px;
+        padding: 30px 20px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s;
+    }
+    
+    .rq9t2_benefit:hover {
+        transform: translateY(-5px);
+    }
+    
+    .zx5c8_benefit_icon {
+        width: 60px;
+        height: 60px;
+        background-color: #ffebcc;
+        border-radius: 50%;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .zx5c8_benefit_icon::before {
+        content: '';
+        width: 30px;
+        height: 30px;
+        background-color: #ff8c00;
+        mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z'/%3E%3C/svg%3E");
+        mask-size: cover;
+        -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z'/%3E%3C/svg%3E");
+        -webkit-mask-size: cover;
+    }
+    
+    .nh6b2_benefit_title {
+        font-size: 1.3rem;
+        color: #333;
+        margin-bottom: 15px;
+    }
+    
+    .vm4k9_benefit_text {
+        font-size: 0.95rem;
+        color: #666;
+        line-height: 1.5;
+    }
+    
+    /* Responsive */
+    @media (max-width: 900px) {
+        .qm3j8_hero {
+            grid-template-columns: 1fr;
+            padding: 32px 24px;
+        }
+
+        .hero-card {
+            max-width: 320px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .xk7p2_container {
+            padding-top: 80px;
+        }
+
+        .zt5v9_title {
+            max-width: 100%;
+            font-size: 2rem;
+        }
+
+        .lp6r4_subtitle {
+            max-width: 100%;
+        }
+
+        .hero-actions {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .qs8w3_steps {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

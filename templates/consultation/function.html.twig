@@ -1,0 +1,90 @@
+{% block javascript %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+    // Gestion des ordonnances dynamiques
+    const container = document.querySelector('.ordonnances-container');
+    const addButton = document.querySelector('.add-ordonnance-button');
+    const list = document.querySelector('.ordonnances-list');
+    
+    if (container && addButton) {
+        let index = document.querySelectorAll('.ordonnance-item').length;
+        
+        // Ajouter une nouvelle ordonnance
+        addButton.addEventListener('click', function() {
+            const prototype = container.dataset.prototype;
+            const newForm = prototype.replace(/__name__/g, index);
+            
+            const wrapper = document.createElement('div');
+            wrapper.className = 'ordonnance-item';
+            wrapper.innerHTML = `
+                <div class="ordonnance-header">
+                    <span class="ordonnance-number">Médicament #${index + 1}</span>
+                    <button type="button" class="remove-ordonnance">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="ordonnance-fields">
+                    <div class="form-group">
+                        <label class="form-label">Médicament</label>
+                        ${newForm.replace(/id="(.+?)"/g, 'id="$1" class="form-input"')}
+                    </div>
+                </div>
+            `;
+            
+            // Ajouter les classes aux champs
+            const inputs = wrapper.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                if (input.type === 'checkbox') {
+                    input.closest('.form-group').classList.add('form-checkbox-group');
+                } else {
+                    input.classList.add('form-input');
+                }
+            });
+            
+            // Restructurer les champs
+            const fields = wrapper.querySelectorAll('.form-group');
+            const fieldsContainer = wrapper.querySelector('.ordonnance-fields');
+            
+            fields.forEach((field, i) => {
+                if (i > 0) {
+                    const label = document.createElement('label');
+                    label.className = 'form-label';
+                    label.textContent = i === 1 ? 'Dose' : 'Prises';
+                    field.prepend(label);
+                    fieldsContainer.appendChild(field);
+                }
+            });
+            
+            list.appendChild(wrapper);
+            
+            // Ajouter l'événement de suppression
+            const removeButton = wrapper.querySelector('.remove-ordonnance');
+            removeButton.addEventListener('click', function() {
+                wrapper.remove();
+                updateOrdonnanceNumbers();
+            });
+            
+            index++;
+        });
+        
+        // Initialiser les boutons de suppression existants
+        document.querySelectorAll('.remove-ordonnance').forEach(button => {
+            button.addEventListener('click', function() {
+                button.closest('.ordonnance-item').remove();
+                updateOrdonnanceNumbers();
+            });
+        });
+        
+        // Mettre à jour les numéros d'ordonnance
+        function updateOrdonnanceNumbers() {
+            document.querySelectorAll('.ordonnance-item').forEach((item, i) => {
+                item.querySelector('.ordonnance-number').textContent = `Médicament #${i + 1}`;
+            });
+        }
+    }
+});
+</script>
+{% endblock %}

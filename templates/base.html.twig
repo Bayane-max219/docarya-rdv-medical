@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Docarya{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css " rel="stylesheet">
+    {# Remplacement Bootstrap 4 par Bootstrap 5 #}
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    {# Ancien Bootstrap 4 supprimé #}
+    {# <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css "> #}
+    {% block style %}{% endblock %}
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding-top: 80px;
+            background-color: #fdf2ff; /* Adjust for the fixed navbar */
+        }
+        
+        .alert-success {
+            background-color: rgba(74, 222, 128, 0.2);
+            color: var(--primary-dark);
+            border: 1px solid var(--primary-color);
+        }
+
+        .alert-danger {
+            background-color: rgba(244, 63, 94, 0.2);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+
+        .alert-warning {
+            background-color: rgba(251, 191, 36, 0.2);
+            color: #d97706;
+            border: 1px solid #fbbf24;
+        }
+
+        .alert-info {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: var(--secondary-dark);
+            border: 1px solid var(--secondary-color);
+        }
+
+        a{
+            text-decoration: none;
+        }
+        .pagination { margin-top: 20px; }
+        .pagination a { margin: 0 5px; text-decoration: none; color: blue; }
+        .pagination .current { font-weight: bold; }
+        .horaire-input { display: flex; flex-direction: column; }
+        .horaire-input label { margin-bottom: 5px; }
+        .horaire-input select { margin-bottom: 10px; }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash-messages .alert {
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        :root {
+            --primary-color: #7c3aed;
+            --primary-dark: #5b21b6;
+            --secondary-color: #ec4899;
+            --secondary-dark: #be185d;
+            --accent-color: #f97316;
+            --light-color: #fdf2ff;
+            --dark-color: #111827;
+            --gray-color: #6b7280;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        /* Dynamic Island Navbar Styles */
+        :root {
+        --navbar-bg: #ffffff;
+        --navbar-text: #111827;
+        --navbar-hover: #7c3aed;
+        --navbar-active: #5b21b6;
+        --dropdown-bg: #111827;
+        --dropdown-hover: #1f2937;
+        --button-primary: #7c3aed;
+        --button-primary-hover: #5b21b6;
+        --transition-speed: 0.3s;
+        }
+
+        /* Base Navbar Styles */
+        .dynamic-navbar {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 95%;
+        max-width: 1200px;
+        z-index: 1000;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        .dynamic-navbar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: var(--navbar-bg);
+        border-radius: 40px;
+        padding: 10px 25px;
+        box-shadow: 0 0px 20px rgba(0, 0, 0, 0.15);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* Brand Section */
+        .dynamic-navbar-brand {
+        flex: 1;
+        }
+
+        .dynamic-navbar-brand a {
+        color: var(--navbar-text);
+        text-decoration: none;
+        font-weight: 100;
+        font-size: 1.5rem;
+        letter-spacing: -0.5px;
+        transition: color var(--transition-speed);
+        }
+
+        .dynamic-navbar-brand a:hover {
+text-decoration : none;
+        color: var(--navbar-hover);
+        }
+
+        /* Links Section */
+        .dynamic-navbar-links {
+            text-transform: uppercase;
+        flex: 2;
+        display: flex;
+        justify-content: center;
+        }
+
+        .dynamic-navbar-links ul {
+        display: flex;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        gap: 20px;
+        }
+
+        .dynamic-navbar-links a {
+        color: var(--navbar-text);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 20px;
+        transition: all var(--transition-speed);
+        }
+
+        .dynamic-navbar-links a:hover {
+text-decoration : none;
+        color: var(--navbar-hover);
+        background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Dropdown Styles */
+        .has-dropdown {
+        position: relative;
+        }
+
+        .dropdown-trigger {
+        display: flex;
+        align-items: center;
+        }
+
+        .dropdown-trigger::after {
+        content: '';
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        margin-left: 8px;
+        border-right: 2px solid var(--navbar-text);
+        border-bottom: 2px solid var(--navbar-text);
+        transform: rotate(45deg);
+        transition: transform var(--transition-speed);
+        }
+
+        .has-dropdown:hover .dropdown-trigger::after {
+        transform: rotate(-135deg);
+        }
+
+        .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background-color: var(--dropdown-bg);
+        border-radius: 15px;
+        min-width: 220px;
+        padding: 10px;
+        margin-top: 10px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all var(--transition-speed);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .has-dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        }
+
+        .dropdown-menu li {
+        margin: 0;
+        padding: 0;
+        }
+
+        .dropdown-menu a {
+        display: block;
+        padding: 10px 15px;
+        border-radius: 10px;
+        transition: all var(--transition-speed);
+        }
+
+        .dropdown-menu a:hover {
+text-decoration : none;
+        background-color: var(--dropdown-hover);
+        }
+
+        /* Account Section */
+        .dynamic-navbar-account {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 15px;
+        }
+
+        .auth-links {
+            text-decoration: none;
+        display: flex;
+        gap: 10px;
+        }
+
+        .login-btn, .register-btn {
+            color:var(--dropdown-bg)
+        text-decoration: none;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: all var(--transition-speed);
+        }
+
+        .login-btn {
+        color: var(--navbar-text);
+        background-color: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .login-btn:hover {
+text-decoration : none;
+        background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .register-btn {
+            text-decoration: none;
+        border: #000 1px solid;
+        background-color: var(--navbar-bg);
+        }
+
+        .register-btn:hover {
+text-decoration : none;
+        background-color: rgba(255, 255, 255, 0.8);
+        }
+
+        .account-info {
+        position: relative;
+        cursor: pointer;
+        }
+
+        .user-initial {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        background-color: gray;
+        color: var(--navbar-bg);
+        border-radius: 50%;
+        font-weight: 600;
+        font-size: 1rem;
+        }
+
+        .account-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background-color: var(--dropdown-bg);
+        border-radius: 15px;
+        min-width: 180px;
+        padding: 10px;
+        margin-top: 10px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all var(--transition-speed);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .account-info:hover .account-dropdown {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        }
+
+        .account-dropdown ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        }
+
+        .account-dropdown a {
+        display: block;
+        color: var(--navbar-bg);
+        text-decoration: none;
+        padding: 10px 15px;
+        border-radius: 10px;
+        transition: all var(--transition-speed);
+        }
+
+        .account-dropdown a:hover {
+text-decoration : none;
+        background-color: var(--dropdown-hover);
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+        display: none;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 10px;
+        z-index: 1001;
+        }
+
+        .mobile-menu-toggle span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        margin: 5px 0;
+        background-color: var(--navbar-text);
+        transition: all var(--transition-speed);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            text-align: center;
+            border-radius: 20px;
+        box-shadow :#b0b0b0 0px 0px 50px;
+        text-transform: uppercase;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: var(--navbar-bg);
+        padding: 80px 20px 20px;
+        z-index: 999;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-20px);
+        transition: all var(--transition-speed);
+        overflow-y: auto;
+        }
+
+        .mobile-menu.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+        }
+
+        .mobile-menu ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        }
+
+        .mobile-menu li {
+        margin: 10px 0;
+        }
+
+        .mobile-menu a {
+        display: block;
+        color: var(--navbar-text);
+        text-decoration: none;
+        font-size: 1.2rem;
+        padding: 12px 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        transition: color var(--transition-speed);
+        }
+
+        .mobile-menu a:hover {
+text-decoration : none;
+        color: var(--navbar-hover);
+        }
+
+        /* Mobile Dropdown */
+        .mobile-dropdown-trigger {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        }
+
+        .mobile-dropdown-trigger::after {
+        content: '';
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-right: 2px solid var(--navbar-text);
+        border-bottom: 2px solid var(--navbar-text);
+        transform: rotate(45deg);
+        transition: transform var(--transition-speed);
+        }
+
+        .mobile-dropdown.active .mobile-dropdown-trigger::after {
+        transform: rotate(-135deg);
+        }
+
+        .mobile-dropdown-menu {
+        display: none;
+        padding-left: 20px;
+        }
+
+        .mobile-dropdown.active .mobile-dropdown-menu {
+        display: block;
+        }
+
+        .mobile-dropdown-menu a {
+        font-size: 1rem;
+        padding: 10px 0;
+        }
+
+        /* Media Queries */
+        @media (max-width: 1024px) {
+        .dynamic-navbar-links {
+            display: none;
+        }
+        
+        .mobile-menu-toggle {
+            display: block;
+        }
+        
+        .dynamic-navbar-container {
+            padding: 10px 20px;
+        }
+        }
+
+        @media (max-width: 768px) {
+        .dynamic-navbar {
+            width: 90%;
+            top: 15px;
+        }
+        
+        .dynamic-navbar-container {
+            padding: 8px 15px;
+        }
+        
+        .dynamic-navbar-brand a {
+            font-size: 1.3rem;
+        }
+        
+        .auth-links .login-btn {
+            text-transform: uppercase;
+            display: none;
+        }
+        
+        .auth-links .register-btn {
+            text-transform: uppercase;
+            text-decoration: none;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+        }
+        .mobile-menu-brand{
+            position: absolute;
+        top: 1rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        z-index: 10;
+        }
+        /* Styles pour le bouton de fermeture */
+    .close-mobile-menu {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        z-index: 10;
+    }
+
+    .close-mobile-menu svg {
+        width: 1.5rem;
+        height: 1.5rem;
+        color: var(--text-primary);
+        transition: var(--transition);
+    }
+
+    .close-mobile-menu svg:hover {
+        color: var(--primary-color);
+    }
+    </style>
+    {% block stylesheets %}
+    {% endblock %}
+</head>
+<body>
+    <header>
+        <nav class="dynamic-navbar">
+            
+            <div class="dynamic-navbar-container">
+                <!-- Logo/Brand Section -->
+                <div class="dynamic-navbar-brand">
+                    <a href="{{ path('app_public_home') }}">Docarya</a>
+                </div>
+
+                <!-- Navigation Links Section -->
+                <div class="dynamic-navbar-links">
+                    <ul>
+                        {% if app.user %}
+                            {% if app.user.role == 'ROLE_ADMINISTRATEUR' %}
+                                <li><a href="{{ path('app_public_home') }}">ACCUEIL</a></li>
+                                <li class="has-dropdown">
+                                    <a href="#" class="dropdown-trigger">Administration</a>
+                                    <ul class="dropdown-menu">
+                                        <li><a style="color:white;" href="{{ path('app_professionnel_de_sante_index') }}">Professionnels de Santé</a></li>
+                                        <li><a style="color:white;" href="{{ path('app_specialite_index') }}">Spécialités</a></li>
+                                        <li><a style="color:white;" href="{{ path('app_rendez_vous_index') }}">Rendez-vous</a></li>
+                                    </ul>
+                                </li>
+                            {% elseif app.user.role == 'ROLE_PROFESSIONNEL_DE_SANTE' %}
+                                <li><a href="{{ path('app_home_user') }}">ACCUEIL</a></li>
+                                <li><a href="{{ path('app_rendez_vous_index') }}">RDV</a></li>
+                                <li><a href="{{ path('app_gestion_agenda_index') }}">Prendre pause/congé</a></li>
+                                <li><a href="{{ path('app_professionnel_de_sante_calendrier', {'id': app.user.id}) }}">Mon calendrier</a></li>
+                            {% elseif app.user.role == 'ROLE_PATIENT' %}
+                                <li><a href="{{ path('app_home_user') }}">ACCUEIL</a></li>
+                                <li><a href="{{ path('app_rendez_vous_index') }}">MES RDV</a></li>
+                                <li><a href="{{ path('app_consultation_index') }}">MES CONSULTATIONS</a></li>
+                                <li><a href="{{ path('app_search') }}"><i class="fas fa-magnifying-glass"></i></a></li>
+                            {% endif %}
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Account Section -->
+                <div class="dynamic-navbar-account">
+                    {% if app.user %}
+                        <div class="account-info">
+                            <span class="user-initial">{{ app.user.nom|first|upper }}</span>
+                            <div class="account-dropdown">
+                                <ul>
+                                {% if app.user.role == 'ROLE_PROFESSIONNEL_DE_SANTE' %}
+                                    <li><a href="{{ path('app_professionnel_de_sante_show', {'id': app.user.id}) }}">Mon profil</a></li>
+                                {% elseif app.user.role == 'ROLE_PATIENT' %}
+                                    <li><a href="{{ path('app_patient_show', {'id': app.user.id}) }}">Mon profil</a></li>
+                                {% endif %}
+                                    <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="auth-links">
+                            <a href="{{ path('app_login') }}" class="login-btn">Connexion</a>
+                            <a href="{{ path('app_register') }}" class="register-btn">Inscription</a>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Mobile Menu Button -->
+                    <button class="mobile-menu-toggle" aria-label="Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu (Hidden by default) -->
+            <div class="mobile-menu">
+                <div class="mobile-menu-brand">
+                    <a href="{{ path('app_public_home') }}">Docarya</a>
+                </div>
+                <!-- Bouton de fermeture -->
+                <button class="close-mobile-menu">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 18L18 6M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+
+                <ul>
+                    {% if app.user %}
+                        {% if app.user.role == 'ROLE_ADMINISTRATEUR' %}
+                            <li class="mobile-dropdown">
+                                <a href="#" class="mobile-dropdown-trigger">Administration</a>
+                                <ul class="mobile-dropdown-menu">
+                                    <li><a href="{{ path('app_professionnel_de_sante_index') }}">Professionnels de Santé</a></li>
+                                    <li><a href="{{ path('app_specialite_index') }}">Spécialités</a></li>
+                                    <li><a href="{{ path('app_rendez_vous_index') }}">Rendez-vous</a></li>
+                                </ul>
+                            </li>
+                        {% elseif app.user.role == 'ROLE_PROFESSIONNEL_DE_SANTE' %}
+                            <li><a href="{{ path('app_home_user') }}">Accueil</a></li>
+                            <li><a href="{{ path('app_rendez_vous_index') }}">Mes RDVs</a></li>
+                            <li><a href="{{ path('app_gestion_agenda_index') }}">pause/congé</a></li>
+                            <li><a href="{{ path('app_professionnel_de_sante_calendrier', {'id': app.user.id}) }}">Mon calendrier</a></li>
+                            <li><a href="{{ path('app_professionnel_de_sante_show', {'id': app.user.id}) }}">Mon profil</a></li>
+                        {% elseif app.user.role == 'ROLE_PATIENT' %}
+                            <li><a href="{{ path('app_home_user') }}">Accueil</a></li>
+                            <li><a href="{{ path('app_search') }}"><i class="fas fa-magnifying-glass"></i></a></li>
+                            <li><a href="{{ path('app_rendez_vous_index') }}">Mes RDVs</a></li>
+                            <li><a href="{{ path('app_consultation_index') }}">Mes consultations</a></li>
+                            <li><a href="{{ path('app_patient_show', {'id': app.user.id}) }}">Mon profil</a></li>
+                        {% endif %}
+                        <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+                    {% else %}
+                        <li><a href="{{ path('app_login') }}">Connexion</a></li>
+                        <li><a href="{{ path('app_register') }}">Inscription</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </nav>
+
+    </header>
+
+    <main class="mt-3">
+        <div class="flash-messages">
+            {% for flash_message in app.session.flashbag.get('success') %}
+                <div class="alert alert-success">{{ flash_message }}</div>
+            {% endfor %}
+            {% for flash_message in app.session.flashbag.get('error') %}
+                <div class="alert alert-danger">{{ flash_message }}</div>
+            {% endfor %}
+            {% for flash_message in app.session.flashbag.get('warning') %}
+                <div class="alert alert-warning">{{ flash_message }}</div>
+            {% endfor %}
+            {% for flash_message in app.session.flashbag.get('info') %}
+                <div class="alert alert-info">{{ flash_message }}</div>
+            {% endfor %}
+        </div>
+    {% block body %}{% endblock %}
+    </main>
+
+    <footer class="bg-light text-center py-3">
+        <p>Docarya - Votre plateforme de prise de rendez-vous santé en ligne.</p>
+        <p>Plateforme de santé © {{ "now"|date("Y") }}</p>
+    </footer>
+
+    {# Scripts Bootstrap nécessaires pour les modals #}
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const mobileDropdowns = document.querySelectorAll('.mobile-dropdown');
+    const closeMobileMenuButton = document.querySelector('.close-mobile-menu');
+
+    // Toggle mobile menu
+    mobileMenuToggle.addEventListener('click', function () {
+        mobileMenu.classList.toggle('active');
+
+        // Animate hamburger to X
+        const spans = this.querySelectorAll('span');
+        if (mobileMenu.classList.contains('active')) {
+            spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+            spans[1].style.opacity = '0';
+            spans[2].style.transform = 'rotate(-45deg) translate(7px, -7px)';
+        } else {
+            spans[0].style.transform = 'none';
+            spans[1].style.opacity = '1';
+            spans[2].style.transform = 'none';
+        }
+    });
+
+    // Close mobile menu when clicking the close button
+    closeMobileMenuButton.addEventListener('click', function () {
+        mobileMenu.classList.remove('active');
+
+        // Reset hamburger animation
+        const spans = mobileMenuToggle.querySelectorAll('span');
+        spans[0].style.transform = 'none';
+        spans[1].style.opacity = '1';
+        spans[2].style.transform = 'none';
+    });
+
+    // Toggle mobile dropdowns
+    mobileDropdowns.forEach(dropdown => {
+        const trigger = dropdown.querySelector('.mobile-dropdown-trigger');
+        trigger.addEventListener('click', function (e) {
+            e.preventDefault();
+            dropdown.classList.toggle('active');
+        });
+    });
+});
+    </script>
+    {% block javascripts %}
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    {% endblock %}
+</body>
+</html>

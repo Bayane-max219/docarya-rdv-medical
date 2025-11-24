@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Carnet de {{ patient.nom }}{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Carnet de Santé de {{ patient.nom }}</h1>
+    
+    {% if not is_owner %}
+        <div class="alert alert-info">
+            Vous consultez ce carnet avec l'autorisation du patient
+        </div>
+    {% endif %}
+
+    <h3>Consultations</h3>
+    {% if consultations|length > 0 %}
+        <div class="list-group">
+            {% for consultation in consultations %}
+                <div class="list-group-item">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ consultation.rendezVous.professionnel.nom }}</h5>
+                        <small>{{ consultation.date|date('d/m/Y') }}</small>
+                    </div>
+                    <p class="mb-1">{{ consultation.notes }}</p>
+                    {% if consultation.ordonnances|length > 0 %}
+                        <div class="mt-2">
+                            <strong>Ordonnance :</strong>
+                            <ul>
+                                {% for ordonnance in consultation.ordonnances %}
+                                    <li>{{ ordonnance.medicament }} - {{ ordonnance.dose }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">Aucune consultation enregistrée</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,123 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouvelle Consultation{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ include('consultation/style.html.twig') }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ include('consultation/function.html.twig') }}
+{% endblock %}
+
+{% block body %}
+    <div class="consultation-container">
+        <div class="consultation-header-actions">
+            <h1 class="consultation-header">Nouvelle Consultation</h1>
+            <div class="header-actions">
+                <a href="{{ path('app_consultation_index') }}" class="back-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Retour à la liste
+                </a>
+            </div>
+        </div>
+
+        <div class="consultation-form-card">
+            <div class="form-card-header">
+                <div class="patient-info">
+                    <div class="patient-avatar">
+                        {{ consultation.rendezVous.patient.nom|first }}{{ consultation.rendezVous.patient.prenom|first }}
+                    </div>
+                    <div class="patient-details">
+                        <span class="patient-name">{{ consultation.rendezVous.patient.nom }} {{ consultation.rendezVous.patient.prenom }}</span>
+                        <span class="appointment-date">Rendez-vous du {{ consultation.rendezVous.dateHeure|date('d/m/Y H:i') }}</span>
+                    </div>
+                </div>
+                <div class="form-price">
+                    <span class="price-label">Tarif</span>
+                    <span class="price-value">{{ consultation.prix }} Ariary</span>
+                </div>
+            </div>
+
+            {{ form_start(form, {'attr': {'class': 'consultation-form'}}) }}
+                
+
+                <div class="form-section">
+                    <h2 class="form-section-title">Ordonnances</h2>
+                    <div class="ordonnances-container" data-prototype="{{ form_widget(form.ordonnances.vars.prototype)|e('html_attr') }}">
+                        <div class="ordonnances-list">
+                            {% for ordonnanceField in form.ordonnances %}
+                                <div class="ordonnance-item">
+                                    <div class="ordonnance-header">
+                                        <span class="ordonnance-number">Médicament #{{ loop.index }}</span>
+                                        <button type="button" class="remove-ordonnance">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="ordonnance-fields">
+                                        <div class="form-group">
+                                            <label class="form-label">Médicament</label>
+                                            {{ form_widget(ordonnanceField.medicament, {'attr': {'class': 'form-input'}}) }}
+                                            {{ form_errors(ordonnanceField.medicament) }}
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Dose</label>
+                                            {{ form_widget(ordonnanceField.dose, {'attr': {'class': 'form-input'}}) }}
+                                            {{ form_errors(ordonnanceField.dose) }}
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Prises</label>
+                                            {{ form_widget(ordonnanceField.prise, {'attr': {'class': 'form-checkbox-group'}}) }}
+                                            {{ form_errors(ordonnanceField.prise) }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <button type="button" class="add-ordonnance-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                            </svg>
+                            Ajouter un médicament
+                        </button>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h2 class="form-section-title">Notes de consultation</h2>
+                    <div class="form-group">
+                        {{ form_widget(form.notes, {'attr': {'class': 'form-textarea', 'placeholder': 'Saisissez vos notes de consultation...'}}) }}
+                        {{ form_errors(form.notes) }}
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h2 class="form-section-title">Prix de la consultation</h2>
+                    <div class="form-group">
+                        {{ form_widget(form.prix, {'attr': {'class': 'form-textarea', 'placeholder': 'Saisissez le prix de la consultation...'}}) }}
+                        {{ form_errors(form.prix) }}
+                    </div>
+                </div>
+
+
+                <div class="form-actions">
+                    <button type="submit" class="submit-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Enregistrer la consultation
+                    </button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

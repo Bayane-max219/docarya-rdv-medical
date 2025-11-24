@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Gérer les accès{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Gérer les accès à mon carnet</h1>
+    
+    <div class="card">
+        <div class="card-body">
+            {{ form_start(form) }}
+                {{ form_row(form.professionnels, {
+                    label: 'Professionnels autorisés',
+                    attr: {class: 'select2'},
+                    help: 'Sélectionnez les professionnels qui peuvent accéder à votre carnet'
+                }) }}
+                
+                <button type="submit" class="btn btn-primary">
+                    Enregistrer les modifications
+                </button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+$(document).ready(function() {
+    $('.select2').select2({
+        placeholder: "Sélectionnez des professionnels",
+        allowClear: true
+    });
+});
+</script>
+{% endblock %}

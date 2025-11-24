@@ -1,0 +1,49 @@
+{# templates/consultation/_form.html.twig #}
+
+{{ form_start(form) }}
+    {{ form_row(form.date) }}
+    {{ form_row(form.notes) }}
+    
+    {# Champ des ordonnances avec JavaScript pour ajouter/supprimer #}
+    <div class="ordonnances-wrapper" data-prototype="{{ form_widget(form.ordonnances.vars.prototype)|e('html_attr') }}">
+        {{ form_label(form.ordonnances) }}
+        {% for ordonnance in form.ordonnances %}
+            <div class="ordonnance-item">
+                {{ form_widget(ordonnance) }}
+                <button type="button" class="remove-ordonnance btn btn-danger">Supprimer</button>
+            </div>
+        {% endfor %}
+        <button type="button" class="add-ordonnance btn btn-secondary">Ajouter une ordonnance</button>
+    </div>
+
+    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const wrapper = document.querySelector('.ordonnances-wrapper');
+    const addButton = wrapper.querySelector('.add-ordonnance');
+    let index = wrapper.querySelectorAll('.ordonnance-item').length;
+
+    addButton.addEventListener('click', function() {
+        const prototype = wrapper.dataset.prototype;
+        const newItem = document.createElement('div');
+        newItem.classList.add('ordonnance-item');
+        newItem.innerHTML = prototype.replace(/__name__/g, index);
+        wrapper.insertBefore(newItem, addButton);
+        index++;
+        
+        // Ajouter un écouteur pour le bouton de suppression
+        newItem.querySelector('.remove-ordonnance').addEventListener('click', function() {
+            newItem.remove();
+        });
+    });
+
+    // Initialiser les boutons de suppression existants
+    wrapper.querySelectorAll('.remove-ordonnance').forEach(button => {
+        button.addEventListener('click', function() {
+            this.closest('.ordonnance-item').remove();
+        });
+    });
+});
+</script>

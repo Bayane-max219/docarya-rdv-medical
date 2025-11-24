@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Traiter la demande d'accès #{{ demande.id }}{% endblock %}
+
+{% block body %}
+    <h1>Demande d'accès de {{ demande.demandeur.nom }}</h1>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <p><strong>Date de la demande :</strong> {{ demande.createdAt|date('d/m/Y H:i') }}</p>
+            <p><strong>Motif :</strong> {{ demande.rendezVousLie ? demande.rendezVousLie.motif : 'Accès général' }}</p>
+        </div>
+    </div>
+
+    <form method="post">
+        <h2>Sélectionnez les consultations à partager</h2>
+        
+        <div class="list-group mb-3">
+            {% for consultation in consultations %}
+                <label class="list-group-item">
+                    <input class="form-check-input me-1" type="checkbox" name="consultations[]" value="{{ consultation.id }}">
+                    Consultation du {{ consultation.date|date('d/m/Y') }} avec {{ consultation.rendezVous.professionnel.nom }}
+                </label>
+            {% endfor %}
+        </div>
+
+        <div class="btn-group">
+            <button type="submit" name="action" value="accept" class="btn btn-success">Accepter la sélection</button>
+            <button type="submit" name="action" value="reject" class="btn btn-danger">Refuser la demande</button>
+            <a href="{{ path('app_demande_acces_index') }}" class="btn btn-secondary">Annuler</a>
+        </div>
+    </form>
+{% endblock %}

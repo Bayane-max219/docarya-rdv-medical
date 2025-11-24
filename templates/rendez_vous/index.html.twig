@@ -1,0 +1,520 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Rendez-vous{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+<style>
+    :root {
+  --primary-color: #7c3aed;
+  --primary-light: #a855f7;
+  --primary-dark: #5b21b6;
+  --success-color: #10b981;
+  --success-light: #d1fae5;
+  --warning-color: #f59e0b;
+  --warning-light: #fef3c7;
+  --danger-color: #ef4444;
+  --danger-light: #fee2e2;
+  --info-color: #ec4899;
+  --info-light: #f9a8d4;
+  --gray-50: #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+  --white: #ffffff;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --radius-sm: 0.125rem;
+  --radius: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+  --transition: all 0.2s ease;
+}
+
+/* Base styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  color: var(--gray-800);
+  line-height: 1.5;
+  background-color: #fdf2ff;
+}
+
+/* Container */
+.rdv-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+/* Header */
+.rdv-header {
+  margin-bottom: 2rem;
+}
+
+.rdv-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  position: relative;
+  display: inline-block;
+  padding-bottom: 0.5rem;
+}
+
+.rdv-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 3rem;
+  height: 0.25rem;
+  background-color: var(--primary-color);
+  border-radius: var(--radius-full);
+}
+
+/* Content */
+.rdv-content {
+  width: 100%;
+}
+
+/* List */
+.rdv-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .rdv-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .rdv-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Card */
+.rdv-card {
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.rdv-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Card Header */
+.rdv-card-header {
+  padding: 1.25rem;
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+
+.rdv-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--white);
+  color: var(--primary-color);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.75rem;
+  min-width: 3.5rem;
+  text-align: center;
+}
+
+.rdv-day {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.rdv-month {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.rdv-time {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.rdv-clock-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rdv-status {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border-bottom-left-radius: var(--radius);
+}
+
+.status-confirmé {
+  background-color: var(--success-color);
+}
+
+.status-en.attente, .status-en.attente {
+  background-color: var(--warning-color);
+}
+
+.status-annulé {
+  background-color: var(--danger-color);
+}
+
+/* Card Body */
+.rdv-card-body {
+  padding: 1.25rem;
+  flex-grow: 1;
+}
+
+.rdv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rdv-person {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rdv-avatar {
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-full);
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.rdv-person-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.rdv-person-name {
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.rdv-motif {
+  color: var(--gray-600);
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Card Footer */
+.rdv-card-footer {
+  padding: 1.25rem;
+  border-top: 1px solid var(--gray-200);
+}
+
+.rdv-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.rdv-form {
+  flex: 1;
+}
+
+.rdv-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 500;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: var(--transition);
+  border: none;
+  width: 100%;
+  text-decoration: none;
+}
+
+.rdv-btn svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.rdv-btn-cancel {
+  background-color: var(--danger-light);
+  color: var(--danger-color);
+}
+
+.rdv-btn-cancel:hover {
+  background-color: var(--danger-color);
+  color: var(--white);
+}
+
+.rdv-btn-confirm {
+  background-color: var(--success-light);
+  color: var(--success-color);
+}
+
+.rdv-btn-confirm:hover {
+  background-color: var(--success-color);
+  color: var(--white);
+}
+
+.rdv-btn-primary {
+  background-color: var(--primary-light);
+  color: var(--primary-dark);
+}
+
+.rdv-btn-primary:hover {
+  background-color: var(--primary-color);
+  color: var(--white);
+}
+
+/* Empty state */
+.rdv-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background-color: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.rdv-empty-icon {
+  color: var(--gray-400);
+  margin-bottom: 1.5rem;
+}
+
+.rdv-empty-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--gray-800);
+  margin-bottom: 0.5rem;
+}
+
+.rdv-empty-text {
+  color: var(--gray-500);
+  max-width: 24rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rdv-card {
+  animation: fadeIn 0.3s ease-out;
+  animation-fill-mode: both;
+}
+
+.rdv-list > *:nth-child(1) { animation-delay: 0.1s; }
+.rdv-list > *:nth-child(2) { animation-delay: 0.2s; }
+.rdv-list > *:nth-child(3) { animation-delay: 0.3s; }
+.rdv-list > *:nth-child(4) { animation-delay: 0.4s; }
+.rdv-list > *:nth-child(5) { animation-delay: 0.5s; }
+.rdv-list > *:nth-child(6) { animation-delay: 0.6s; }
+</style>
+{% endblock %}
+
+{% block body %}
+    <div class="rdv-container">
+        <div class="rdv-header">
+            <h1 class="rdv-title">Mes Rendez-vous</h1>
+        </div>
+
+        <div class="rdv-content">
+            {% if rendez_vouses|length > 0 %}
+                <div class="rdv-list">
+                    {% for rendez_vou in rendez_vouses %}
+                        <div class="rdv-card">
+                            <div class="rdv-card-header" 
+                            {% if rendez_vou.statut == 'confirmé' %}
+                                style="background-color: #2fa44a;"
+                            {% elseif rendez_vou.statut == 'terminé' %}
+                                style="background-color: #9ab4ff;"
+                              {% elseif rendez_vou.statut == 'en attente' %}
+                                style="background-color: #ddd031;"
+                              {% elseif rendez_vou.statut == 'annule' %}
+                                style="background-color: #ed504d;"
+                              {% endif %}
+                            
+                            >
+                                <div class="rdv-date">
+                                    <div class="rdv-day"
+                                    {% if rendez_vou.statut == 'confirmé' %}
+                                      style="color: #2fa44a;"
+                                  {% elseif rendez_vou.statut == 'terminé' %}
+                                      style="color: #9ab4ff;"
+                                    {% elseif rendez_vou.statut == 'en attente' %}
+                                      style="color: #ddd031;"
+                                    {% elseif rendez_vou.statut == 'annule' %}
+                                      style="color: #ed504d;"
+                                    {% endif %}
+                                    >{{ rendez_vou.dateHeure|date('d') }}</div>
+                                    <div class="rdv-month"
+                                    {% if rendez_vou.statut == 'confirmé' %}
+                                      style="color: #2fa44a;"
+                                  {% elseif rendez_vou.statut == 'terminé' %}
+                                      style="color: #9ab4ff;"
+                                    {% elseif rendez_vou.statut == 'en attente' %}
+                                      style="color: #ddd031;"
+                                    {% elseif rendez_vou.statut == 'annule' %}
+                                      style="color: #ed504d;"
+                                    {% endif %}
+                                    >{{ rendez_vou.dateHeure|date('M') }}</div>
+                                </div>
+                                <div class="rdv-time">
+                                    <div class="rdv-clock-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                    </div>
+                                    <span>{{ rendez_vou.dateHeure|date('H:i') }}</span>
+                                </div>
+                                <div class="rdv-status status-{{ rendez_vou.statut|lower }}">
+                                    {{ rendez_vou.statut }}
+                                </div>
+                            </div>
+                            
+                            <div class="rdv-card-body">
+                                <div class="rdv-info">
+                                    <div class="rdv-person">
+                                        <div class="rdv-avatar">
+                                            {% if is_granted('ROLE_PATIENT') %}
+                                                {{ rendez_vou.professionnel.nom|first }}{{ rendez_vou.professionnel.prenom|first }}
+                                            {% elseif is_granted('ROLE_PROFESSIONNEL_DE_SANTE') %}
+                                                {{ rendez_vou.patient.nom|first }}{{ rendez_vou.patient.prenom|first }}
+                                            {% endif %}
+                                        </div>
+                                        <div class="rdv-person-details">
+                                            <div class="rdv-person-name">
+                                                {% if is_granted('ROLE_PATIENT') %}
+                                                    Dr. {{ rendez_vou.professionnel.nom }} {{ rendez_vou.professionnel.prenom }}
+                                                {% elseif is_granted('ROLE_PROFESSIONNEL_DE_SANTE') %}
+                                                    {{ rendez_vou.patient.nom }} {{ rendez_vou.patient.prenom }}
+                                                {% endif %}
+                                            </div>
+                                            <div class="rdv-motif">
+                                                {{ rendez_vou.motif }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                {% if rendez_vou.statut == 'annule' %}
+                                    
+                                {% else %}
+                                <div class="rdv-card-footer">
+                                  <div class="rdv-actions">
+                                      <form method="post" action="{{ path('app_rendez_vous_delete', {'id': rendez_vou.id}) }}" class="rdv-form" onsubmit="return confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous?');">
+                                          <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ rendez_vou.id) }}">
+                                          <button class="rdv-btn rdv-btn-cancel">
+                                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                                                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                                              </svg>
+                                              Annuler
+                                          </button>
+                                      </form>
+                                    
+                                        {% if is_granted('ROLE_PROFESSIONNEL_DE_SANTE') and rendez_vou.professionnel.id == app.user.id %}
+                                          {% if rendez_vou.statut != 'confirmé' %}
+                                              <form method="post" action="{{ path('app_rendez_vous_confirm', {'id': rendez_vou.id}) }}" class="rdv-form">
+                                                  <input type="hidden" name="_token" value="{{ csrf_token('confirm' ~ rendez_vou.id) }}">
+                                                  <button class="rdv-btn rdv-btn-confirm">
+                                                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                          <polyline points="20 6 9 17 4 12"></polyline>
+                                                      </svg>
+                                                      Confirmer
+                                                  </button>
+                                              </form>
+                                          {% elseif rendez_vou.statut == 'annule' %}   
+                                                                                
+                                            {% else %}
+                                              <a href="{{ path('app_consultation_new', {'rendezVousId': rendez_vou.id}) }}" class="rdv-btn rdv-btn-primary">
+                                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                  </svg>
+                                                  Ajouter Consultation
+                                              </a>
+                                          {% endif %}
+                                      {% endif %}
+                                    </div>
+                                  </div>
+                                {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="rdv-empty">
+                    <div class="rdv-empty-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="16" y1="2" x2="16" y2="6"></line>
+                            <line x1="8" y1="2" x2="8" y2="6"></line>
+                            <line x1="3" y1="10" x2="21" y2="10"></line>
+                        </svg>
+                    </div>
+                    <h2 class="rdv-empty-title">Aucun rendez-vous trouvé</h2>
+                    <p class="rdv-empty-text">Vous n'avez pas encore de rendez-vous programmés.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

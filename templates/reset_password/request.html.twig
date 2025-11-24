@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reset your password{% endblock %}
+
+{% block body %}
+{% for message in app.flashes('reset_password_error') %}
+    <div class="alert alert-danger" style="margin-bottom: 1rem;">{{ message }}</div>
+{% endfor %}
+{% for message in app.flashes('reset_password_success') %}
+    <div class="alert alert-success" style="margin-bottom: 1rem;">{{ message }}</div>
+{% endfor %}
+{% for message in app.flashes('notice') %}
+    <div style="background:yellow; color:black; padding:10px; margin-bottom:1rem;">{{ message }}</div>
+{% endfor %}
+<div class="reset-container">
+    <div class="reset-card">
+        <h1 class="reset-title">Réinitialiser votre mot de passe</h1>
+        <p class="reset-desc">Entrez votre adresse email, nous vous enverrons un lien pour réinitialiser votre mot de passe.</p>
+        <form method="post">
+            {{ form_row(requestForm.email) }}
+            <button class="reset-btn" type="submit">Envoyer le lien de réinitialisation</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block style %}
+<style>
+.reset-container {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e0f2fe;
+}
+.reset-card {
+    background: #fff;
+    padding: 2.5rem 2rem;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+.reset-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: #2563eb;
+}
+.reset-desc {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+.reset-btn {
+    background: linear-gradient(90deg, #7c3aed, #ec4899);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.2s;
+}
+.reset-btn:hover {
+    background: linear-gradient(90deg, #5b21b6, #be185d);
+}
+</style>
+{% endblock %}

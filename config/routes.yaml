@@ -1,0 +1,28 @@
+# Routes pour le contrôleur RegistrationController
+app_register:
+    path: /register
+    controller: App\Controller\RegistrationController::register
+    methods: [GET, POST]
+
+app_register_step2:
+    path: /register/{role}
+    controller: App\Controller\RegistrationController::registerStep2
+    methods: [GET, POST]
+    requirements:
+        role: patient|professionnel_de_sante|administrateur  # Validation du paramètre {role}
+
+# Routes pour le contrôleur SecurityController
+app_login:
+    path: /login
+    controller: App\Controller\SecurityController::login
+    methods: [GET, POST]
+
+app_logout:
+    path: /logout
+    controller: App\Controller\SecurityController::logout
+    methods: [GET]
+
+app_pending_verification:
+    path: /account-pending
+    controller: App\Controller\SecurityController::accountPending
+    methods: [GET]

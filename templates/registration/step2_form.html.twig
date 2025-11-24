@@ -1,0 +1,1106 @@
+{% block body %}
+  <div class="xk7p2_container">
+      <div class="qm3j8_card">
+          <div class="zt5v9_left_panel">
+              <div class="lp6r4_header">
+                  <div class="gf2h7_logo">
+                      <span class="yw9k1_logo_text">DOCARYA</span>
+                  </div>
+                  <nav class="bn4t6_nav">
+                      <p class="cp8m3_nav_link">Simple</p>
+                      <p class="cp8m3_nav_link">-</p>
+                      <p class="cp8m3_nav_link">Efficace</p>
+                      <p class="cp8m3_nav_link">-</p>
+                      <p class="cp8m3_nav_link">Sécurisé</p>
+                  </nav>
+                  <div class="flash-messages">
+                        {% for flash_message in app.session.flashbag.get('success') %}
+                            <div class="alert alert-success">{{ flash_message }}</div>
+                        {% endfor %}
+                        {% for flash_message in app.session.flashbag.get('error') %}
+                            <div class="alert alert-danger">{{ flash_message }}</div>
+                        {% endfor %}
+                        {% for flash_message in app.session.flashbag.get('warning') %}
+                            <div class="alert alert-warning">{{ flash_message }}</div>
+                        {% endfor %}
+                        {% for flash_message in app.session.flashbag.get('info') %}
+                            <div class="alert alert-info">{{ flash_message }}</div>
+                        {% endfor %}
+                    </div>
+              </div>
+              <form method="post" class="jt7r2_form">
+                {{ form_row(form._token) }} {# Ajoutez cette ligne #}
+                {{ form_errors(form) }} <!-- Add this line -->
+                <h1 class="qs8w3_title">Inscription - {{ role|replace({'_': ' '})|title }}</h1>
+
+                <div class="nh6b2_signup_prompt">
+                    <span>Vous avez déjà un compte?</span>
+                    <a href="{{ path('app_login') }}" class="hd2j6_signup_link">Se connecter</a>
+                </div>  
+                  
+                  {# Champs communs #}
+                  <div class="uy4k7_form_group">
+                      <label class="xz2v8_label">Nom</label>
+                      {{ form_widget(form.nom, {'attr': {'class': 'gt7h3_input'}}) }}
+                      {{ form_errors(form.nom) }}
+                  </div>
+                  <div class="uy4k7_form_group">
+                      <label class="xz2v8_label">Prénom</label>
+                      {{ form_widget(form.prenom, {'attr': {'class': 'gt7h3_input'}}) }}
+                      {{ form_errors(form.prenom) }}
+                  </div>
+                  <div class="uy4k7_form_group">
+                          <label class="xz2v8_label">Adresse</label>
+                          {{ form_widget(form.adresse, {'attr': {'class': 'gt7h3_input'}}) }}
+                          {{ form_errors(form.adresse) }}
+                      </div>
+                      <div class="uy4k7_form_group">
+                          <label class="xz2v8_label">Téléphone</label>
+                          {{ form_widget(form.telephone, {'attr': {'class': 'gt7h3_input'}}) }}
+                          {{ form_errors(form.telephone) }}
+                      </div>
+                  <div class="uy4k7_form_group">
+                      <label class="xz2v8_label">Email</label>
+                      {{ form_widget(form.email, {'attr': {'class': 'gt7h3_input'}}) }}
+                      {{ form_errors(form.email) }}
+                  </div>
+                        
+                  {# Gestion mot de passe #}
+                  {% if form.motDePasse is defined %}
+                      {% if form.motDePasse.vars.prototype is defined %}
+                          <div class="uy4k7_form_group">
+                              <label class="xz2v8_label">Mot de passe</label>
+                              <div class="kp3j7_password_field">
+                                  {{ form_widget(form.motDePasse.first, {'attr': {'class': 'gt7h3_input'}}) }}
+                                  <button type="button" class="rq9t2_toggle_password">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                          <circle cx="12" cy="12" r="3"></circle>
+                                      </svg>
+                                  </button>
+                              </div>
+                              {{ form_errors(form.motDePasse.first) }}
+                          </div>
+                          <div class="uy4k7_form_group">
+                              <label class="xz2v8_label">Confirmation</label>
+                              <div class="kp3j7_password_field">
+                                  {{ form_widget(form.motDePasse.second, {'attr': {'class': 'gt7h3_input'}}) }}
+                                  <button type="button" class="rq9t2_toggle_password">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                          <circle cx="12" cy="12" r="3"></circle>
+                                      </svg>
+                                  </button>
+                              </div>
+                          </div>
+                      {% else %}
+                          <div class="uy4k7_form_group">
+                              <label class="xz2v8_label">Mot de passe</label>
+                              <div class="kp3j7_password_field">
+                                  {{ form_widget(form.motDePasse, {'attr': {'class': 'gt7h3_input'}}) }}
+                                  <button type="button" class="rq9t2_toggle_password">
+                                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                          <circle cx="12" cy="12" r="3"></circle>
+                                      </svg>
+                                  </button>
+                              </div>
+                              {{ form_errors(form.motDePasse) }}
+                          </div>
+                      {% endif %}
+                  {% endif %}
+                  {# Champs spécifiques patients #}
+                  {% if role == 'patient' %}
+                      
+                      <div class="uy4k7_form_group">
+                          <label class="xz2v8_label">Antécédents médicaux</label>
+                          {{ form_widget(form.antecedentsMedicaux, {'attr': {'class': 'gt7h3_input', 'rows': 4}}) }}
+                          {{ form_errors(form.antecedentsMedicaux) }}
+                      </div>
+                      <div class="uy4k7_form_group">
+                          <label class="xz2v8_label">Maladies chroniques</label>
+                          <div class="checkbox-group">
+                              {{ form_widget(form.maladiesChroniques) }}
+                          </div>
+                          {{ form_errors(form.maladiesChroniques) }}
+                      </div>
+                  {% endif %}
+                  {# Champs spécifiques professionnels #}
+              {% if role == 'professionnel_de_sante' %}
+                <div class="uy4k7_form_group" style="visibility: hidden;">
+                    <label class="xz2v8_label">Photo</label>
+                    {{ form_widget(form.photo, {'attr': {'class': 'gt7h3_input'}}) }}
+                    {{ form_errors(form.photo) }}
+                </div>
+                  
+                <div class="uy4k7_form_group">
+                    <label class="xz2v8_label">Spécialité</label>
+                    <input type="text" id="specialite-autocomplete" name="specialite_autocomplete" class="gt7h3_input" placeholder="Commencez à taper..." autocomplete="off">
+                    <div id="specialite-list" class="gt7h3_input" style="position:relative; z-index:10; background:#fff; border:1px solid #e2e8f0; display:none; max-height:180px; overflow-y:auto;"></div>
+                    {{ form_widget(form.specialite, {'attr': {'style': 'display:none;'}}) }}
+                    {{ form_errors(form.specialite) }}
+                </div>
+                <div class="uy4k7_form_group">
+                    <label class="xz2v8_label">Tarif (Ariary)</label>
+                    {{ form_widget(form.tarif, {'attr': {'class': 'gt7h3_input'}}) }}
+                    {{ form_errors(form.tarif) }}
+                </div>
+                
+                <div class="uy4k7_form_group">
+                    <label class="xz2v8_label">Géolocalisation</label>
+                    <div id="map"></div>
+                    <div class="form-group">
+                    <div class="form-check">
+                        <input type="checkbox" id="use_current_location" class="form-check-input">
+                        <label for="use_current_location" class="form-check-label">Utiliser ma position actuelle</label>
+                    </div>
+                </div>
+                    {{ form_row(form.latitude) }}
+                    {{ form_row(form.longitude) }}
+                </div>
+                 
+                
+                {# Section horaires #}
+                <div class="uy4k7_form_group">
+                    <h3 class="xz2v8_label">Horaires de travail</h3>
+                    <div id="jours-selection" class="jours-grid"></div>
+                    <div id="horaires-container" class="horaires-container"></div>
+                    {{ form_widget(form.horairesJson) }}
+                </div>
+            {% endif %}
+                  <button class="zx5c8_submit_btn" type="submit">
+                      S'inscrire
+                  </button>
+                  {% if role == 'professionnel_de_sante' %}
+                  <script>
+                  document.addEventListener('DOMContentLoaded', function() {
+                      // Récupérer la liste des spécialités depuis le select caché généré par Symfony
+                      const select = document.querySelector('[name="'+ '{{ form.specialite.vars.full_name }}' +'"]');
+                      if (!select) return;
+                      select.style.display = 'none';
+                      const input = document.getElementById('specialite-autocomplete');
+                      const list = document.getElementById('specialite-list');
+                      let options = Array.from(select.options).map(opt => ({value: opt.value, label: opt.text}));
+                      // Afficher toute la liste au focus
+                      input.addEventListener('focus', function() {
+                          renderList('');
+                      });
+                      // Filtrer dynamiquement
+                      input.addEventListener('input', function() {
+                          renderList(this.value.trim().toLowerCase());
+                      });
+                      function renderList(filter) {
+                          list.innerHTML = '';
+                          let filtered = options;
+                          if (filter.length > 0) {
+                              filtered = options.filter(opt => opt.label.toLowerCase().startsWith(filter));
+                          }
+                          if (filtered.length === 0) {
+                              list.style.display = 'none';
+                              select.value = '';
+                              return;
+                          }
+                          filtered.forEach(opt => {
+                              const div = document.createElement('div');
+                              div.textContent = opt.label;
+                              div.style.cursor = 'pointer';
+                              div.style.padding = '6px 12px';
+                              div.addEventListener('mousedown', function(e) {
+                                  input.value = opt.label;
+                                  select.value = opt.value;
+                                  list.style.display = 'none';
+                              });
+                              list.appendChild(div);
+                          });
+                          list.style.display = 'block';
+                      }
+                      // Fermer la liste si on quitte le champ
+                      input.addEventListener('blur', function() {
+                          setTimeout(() => { list.style.display = 'none'; }, 200);
+                      });
+                      // Pré-remplir si déjà sélectionné
+                      if (select.value) {
+                          const selected = options.find(opt => opt.value === select.value);
+                          if (selected) input.value = selected.label;
+                      }
+                  });
+                  </script>
+                  {% endif %}
+              </form>
+          </div>
+          <div class="zt5v9_right_panel">
+
+            <div class="cp8m3_content">
+              <div class="jt7r2_bot_illustration">
+                    <img src="{{ asset('images/docaryaLogo.png') }}" alt="Illustration" style="box-shadow : 0px 0px 10px 10px #73a5bf;
+                    max-width: 200px;
+                    border-radius : 10px;
+                    overflow: hidden;">
+              </div>
+              <h2 class="vb5n8_brand">Docarya</h2>
+              <p class="ek9p4_tagline">"Celui qui vous rapproche des vrais héros"</p>
+              <div class="hd2j6_features">
+                  <div class="qs8w3_feature">
+                      <span class="fm6p9_check_icon">✓</span>
+                      <span>Déjà plusieurs utilisateurs satisfaits</span>
+                  </div>
+              </div>
+          </div>
+          </div>
+      </div>
+  </div>
+  {% endblock %}
+{% block javascripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      // Toggle password visibility
+      const togglePasswordButtons = document.querySelectorAll('.rq9t2_toggle_password');
+      
+      togglePasswordButtons.forEach(button => {
+          button.addEventListener('click', function() {
+              const input = this.parentElement.querySelector('input');
+              const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+              input.setAttribute('type', type);
+          });
+      });
+      
+      // Theme toggle
+      const themeToggle = document.getElementById('themeToggle');
+      if (themeToggle) {
+          const htmlElement = document.documentElement;
+          
+          const savedTheme = localStorage.getItem('theme');
+          if (savedTheme) {
+              htmlElement.setAttribute('data-theme', savedTheme);
+          } else {
+              const prefersDark = window.matchMedia('(prefers-color-scheme: light)').matches;
+              htmlElement.setAttribute('data-theme', prefersDark ? 'light' : 'dark');
+          }
+          
+          themeToggle.addEventListener('click', function() {
+              const currentTheme = htmlElement.getAttribute('data-theme');
+              const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+              
+              htmlElement.setAttribute('data-theme', newTheme);
+              localStorage.setItem('theme', newTheme);
+          });
+      }
+
+      // Script pour les horaires des professionnels
+      {% if role == 'professionnel_de_sante' %}
+          const joursSelection = document.getElementById('jours-selection');
+          const horairesContainer = document.getElementById('horaires-container');
+          const horairesJsonInput = document.querySelector('#{{ form.horairesJson.vars.id }}');
+          
+          // Initialiser l'input JSON avec un tableau vide
+          if (!horairesJsonInput.value) {
+              horairesJsonInput.value = JSON.stringify([]);
+          }
+          
+          const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+          const heureOptions = Array.from({ length: 13 }, (_, i) => 8 + i)
+              .map(h => ({ value: h, label: `${h}h00` }));
+
+          // Créer la grille de sélection des jours
+          joursSelection.innerHTML = '';
+          jours.forEach(jour => {
+              const div = document.createElement('div');
+              div.className = 'jour-checkbox-container';
+              
+              const input = document.createElement('input');
+              input.type = 'checkbox';
+              input.className = 'jour-checkbox';
+              input.value = jour;
+              input.id = `jour-${jour.toLowerCase()}`;
+              input.setAttribute('aria-label', `Sélectionner ${jour}`);
+              
+              const label = document.createElement('label');
+              label.className = 'jour-label';
+              label.htmlFor = input.id;
+              label.textContent = jour;
+              
+              div.appendChild(input);
+              div.appendChild(label);
+              joursSelection.appendChild(div);
+          });
+
+          // Ajouter les écouteurs d'événements pour les cases à cocher
+          document.querySelectorAll('.jour-checkbox').forEach(checkbox => {
+              checkbox.addEventListener('change', function() {
+                  if (this.checked) {
+                      // Ajouter un nouveau conteneur d'horaires pour ce jour
+                      const container = createHoraireContainer(this.value);
+                      horairesContainer.appendChild(container);
+                  } else {
+                      // Supprimer le conteneur d'horaires pour ce jour
+                      const containers = Array.from(horairesContainer.children);
+                      const container = containers.find(c => 
+                          c.querySelector('h4').textContent === this.value
+                      );
+                      if (container) {
+                          container.remove();
+                      }
+                  }
+                  // Mettre à jour le JSON
+                  updateHorairesJson();
+              });
+          });
+
+          function createHoraireContainer(jour) {
+              const div = document.createElement('div');
+              div.className = 'horaire-jour';
+              div.dataset.jour = jour;
+              
+              const header = document.createElement('h4');
+              header.className = 'horaire-jour-title';
+              header.textContent = jour;
+              div.appendChild(header);
+              
+              const debutGroup = document.createElement('div');
+              debutGroup.className = 'horaire-group';
+              
+              const debutLabel = document.createElement('label');
+              debutLabel.textContent = 'Heure de début :';
+              debutLabel.className = 'horaire-label';
+              debutGroup.appendChild(debutLabel);
+              
+              const debutSelect = document.createElement('select');
+              debutSelect.className = 'gt7h3_input heure-debut';
+              debutSelect.setAttribute('aria-label', 'Heure de début');
+              
+              heureOptions.forEach(opt => {
+                  const option = document.createElement('option');
+                  option.value = opt.value;
+                  option.textContent = opt.label;
+                  if (opt.value === 8) option.selected = true;
+                  debutSelect.appendChild(option);
+              });
+              
+              debutGroup.appendChild(debutSelect);
+              div.appendChild(debutGroup);
+              
+              const finGroup = document.createElement('div');
+              finGroup.className = 'horaire-group';
+              
+              const finLabel = document.createElement('label');
+              finLabel.textContent = 'Heure de fin :';
+              finLabel.className = 'horaire-label';
+              finGroup.appendChild(finLabel);
+              
+              const finSelect = document.createElement('select');
+              finSelect.className = 'gt7h3_input heure-fin';
+              finSelect.setAttribute('aria-label', 'Heure de fin');
+              
+              // Remplir les options de fin en fonction de l'heure de début
+              updateFinOptions(debutSelect.value, finSelect);
+              
+              finGroup.appendChild(finSelect);
+              div.appendChild(finGroup);
+              
+              const supprimerBtn = document.createElement('button');
+              supprimerBtn.type = 'button';
+              supprimerBtn.className = 'btn-secondary';
+              supprimerBtn.textContent = 'Supprimer';
+              div.appendChild(supprimerBtn);
+              
+              // Ajouter les écouteurs d'événements
+              debutSelect.addEventListener('change', function() {
+                  updateFinOptions(this.value, finSelect);
+                  updateHorairesJson();
+              });
+              
+              finSelect.addEventListener('change', function() {
+                  updateHorairesJson();
+              });
+              
+              supprimerBtn.addEventListener('click', function() {
+                  // Décocher la case correspondante
+                  const checkbox = document.querySelector(`#jour-${jour.toLowerCase()}`);
+                  if (checkbox) checkbox.checked = false;
+                  div.remove();
+                  updateHorairesJson();
+              });
+
+              return div;
+          }
+
+          function updateFinOptions(debutValue, finSelect) {
+              const debutHeure = parseInt(debutValue, 10);
+              finSelect.innerHTML = '';
+              
+              // Ajouter les options de fin (toujours après l'heure de début)
+              for (let h = debutHeure + 1; h <= 20; h++) {
+                  const option = document.createElement('option');
+                  option.value = h;
+                  option.textContent = `${h}h00`;
+                  finSelect.appendChild(option);
+              }
+              
+              // Sélectionner la première option par défaut
+              if (finSelect.options.length > 0) {
+                  finSelect.selectedIndex = 0;
+              }
+          }
+
+          function updateHorairesJson() {
+              const horaires = [];
+              
+              document.querySelectorAll('.horaire-jour').forEach(container => {
+                  const jour = container.dataset.jour;
+                  const debut = container.querySelector('.heure-debut').value;
+                  const fin = container.querySelector('.heure-fin').value;
+                  
+                  if (debut && fin) {
+                      horaires.push({
+                          jour: jour,
+                          heureDebut: `${debut}h00`,
+                          heureFin: `${fin}h00`
+                      });
+                  }
+              });
+              
+              horairesJsonInput.value = JSON.stringify(horaires);
+          }
+
+          // Validation du formulaire
+          document.querySelector('form').addEventListener('submit', function(e) {
+              const horaires = JSON.parse(horairesJsonInput.value || '[]');
+              let isValid = true;
+              
+              // Vérifier que les horaires sont valides
+              horaires.forEach(horaire => {
+                  const debut = parseInt(horaire.heureDebut, 10);
+                  const fin = parseInt(horaire.heureFin, 10);
+                  
+                  if (fin <= debut) {
+                      isValid = false;
+                      alert(`Pour ${horaire.jour}, l'heure de fin doit être après l'heure de début`);
+                  }
+              });
+              
+              if (!isValid) {
+                  e.preventDefault();
+              }
+          });
+      {% endif %}
+  });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialisation de la carte
+        const mapElement = document.getElementById('map');
+        
+        if (mapElement) {
+            mapElement.style.height = '400px';
+            mapElement.style.width = '100%';
+            
+            const initialLat = -18.8792;
+            const initialLng = 47.5079;
+            
+            const map = L.map('map').setView([initialLat, initialLng], 13);
+            
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            const marker = L.marker([initialLat, initialLng], {draggable: true}).addTo(map);
+            
+            const latitudeField = document.getElementById('{{ form.latitude.vars.id }}');
+            const longitudeField = document.getElementById('{{ form.longitude.vars.id }}');
+            const useCurrentLocationCheckbox = document.getElementById('use_current_location');
+            
+            function updateFields(lat, lng) {
+                if (latitudeField) latitudeField.value = lat;
+                if (longitudeField) longitudeField.value = lng;
+                marker.setLatLng([lat, lng]);
+                map.setView([lat, lng], 13);
+            }
+
+            // Événements du marqueur et de la carte
+            marker.on('dragend', function(e) {
+                const position = marker.getLatLng();
+                updateFields(position.lat, position.lng);
+                if (useCurrentLocationCheckbox) {
+                    useCurrentLocationCheckbox.checked = false;
+                }
+            });
+
+            map.on('click', function(e) {
+                updateFields(e.latlng.lat, e.latlng.lng);
+                if (useCurrentLocationCheckbox) {
+                    useCurrentLocationCheckbox.checked = false;
+                }
+                console.log('Clicked at: ', e.latlng , 'Latitude: ', e.latlng.lat, 'Longitude: ', e.latlng.lng);
+            });
+
+            // Initialisation des valeurs existantes
+            if (latitudeField && latitudeField.value && longitudeField && longitudeField.value) {
+                updateFields(latitudeField.value, longitudeField.value);
+            }
+
+            // Gestion de la géolocalisation
+            if (useCurrentLocationCheckbox) {
+                useCurrentLocationCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        if (navigator.geolocation) {
+                            navigator.geolocation.getCurrentPosition(
+                                function(position) {
+                                    const lat = position.coords.latitude;
+                                    const lng = position.coords.longitude;
+                                    updateFields(lat, lng);
+                                },
+                                function(error) {
+                                    console.error("Erreur de géolocalisation : ", error);
+                                    alert("Impossible de récupérer votre position. Veuillez vérifier les permissions de géolocalisation.");
+                                    useCurrentLocationCheckbox.checked = false;
+                                }
+                            );
+                        } else {
+                            alert("La géolocalisation n'est pas supportée par votre navigateur.");
+                            useCurrentLocationCheckbox.checked = false;
+                        }
+                    }
+                });
+            }
+        }
+    });
+</script>
+{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.7.1/dist/leaflet.css" />
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+<style>
+        #map { height: 400px; margin-bottom: 20px; }
+    </style>
+<style>
+  :root {
+
+--xk7p2-bg-color: #fdf2ff;
+--qm3j8-card-bg: #ffffff;
+--zt5v9-text-primary: #1a1a1a;
+--lp6r4-text-secondary: #4a4a4a;
+--gf2h7-accent-gradient: linear-gradient(to right, #7c3aed, #ec4899);
+--yw9k1-input-bg: #f1f5f9;
+--bn4t6-input-border: #e2e8f0;
+--cp8m3-button-text: #ffffff;
+--jt7r2-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+--vb5n8-panel-bg: #111827;
+--ek9p4-panel-text: #ffffff;
+--hd2j6-feature-bg: rgba(255, 255, 255, 0.1);
+--qs8w3-social-border: #e2e8f0;
+--fm6p9-link-color: #7c3aed;
+--uy4k7-error-color: #ef4444;
+--primary-color: #7c3aed;
+--gray-200: #e5e7eb;
+--gray-300: #d1d5db;
+--gray-600: #4b5563;
+}
+
+[data-theme="dark"] {
+--xk7p2-bg-color: #0f172a;
+--qm3j8-card-bg: #1e293b;
+--zt5v9-text-primary: #f1f5f9;
+--lp6r4-text-secondary: #cbd5e1;
+--yw9k1-input-bg: #334155;
+--bn4t6-input-border: #475569;
+--jt7r2-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+--qs8w3-social-border: #475569;
+--gray-200: #374151;
+--gray-300: #4b5563;
+--gray-600: #d1d5db;
+}
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+background-color: var(--xk7p2-bg-color);
+display: flex;
+justify-content: center;
+align-items: center;
+min-height: 100vh;
+transition: background-color 0.3s ease;
+}
+
+.xk7p2_container {
+width: 100%;
+max-width: 1100px;
+padding: 20px;
+}
+
+.qm3j8_card {
+    height: 90%;
+display: flex;
+background-color: var(--qm3j8-card-bg);
+border-radius: 16px;
+overflow: hidden;
+box-shadow: var(--jt7r2-shadow);
+transition: all 0.3s ease;
+}
+
+/* Left Panel - Form Side */
+.zt5v9_left_panel {
+flex: 1;
+padding: 30px;
+display: flex;
+flex-direction: column;
+max-height: 100vh; /* Limite la hauteur au viewport */
+overflow-y: auto;
+}
+
+.lp6r4_header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 40px;
+}
+
+.gf2h7_logo {
+display: flex;
+align-items: center;
+}
+
+.yw9k1_logo_text {
+font-weight: 100;
+font-size: 1.2rem;
+color: var(--zt5v9-text-primary);
+}
+
+.bn4t6_nav {
+display: flex;
+gap: 20px;
+}
+
+.cp8m3_nav_link {
+color: var(--lp6r4-text-secondary);
+text-decoration: none;
+font-size: 0.9rem;
+transition: color 0.2s ease;
+}
+
+.cp8m3_nav_link:hover {
+color: var(--zt5v9-text-primary);
+}
+
+.jt7r2_form {
+flex: 1;
+display: flex;
+flex-direction: column;
+width: 100%;
+max-width: none;
+}
+
+.vb5n8_alert {
+background-color: rgba(239, 68, 68, 0.1);
+color: var(--uy4k7-error-color);
+padding: 12px;
+border-radius: 8px;
+margin-bottom: 20px;
+font-size: 0.9rem;
+}
+
+.ek9p4_user_info {
+background-color: rgba(59, 130, 246, 0.1);
+color: var(--fm6p9-link-color);
+padding: 12px;
+border-radius: 8px;
+margin-bottom: 20px;
+font-size: 0.9rem;
+}
+
+.hd2j6_logout {
+color: var(--fm6p9-link-color);
+text-decoration: none;
+font-weight: 500;
+}
+
+.hd2j6_logout:hover {
+text-decoration: underline;
+}
+
+.qs8w3_title {
+font-size: 1.8rem;
+font-weight: 600;
+color: var(--zt5v9-text-primary);
+margin-bottom: 10px;
+}
+
+.fm6p9_subtitle {
+color: var(--lp6r4-text-secondary);
+margin-bottom: 30px;
+font-size: 0.95rem;
+}
+
+.uy4k7_form_group {
+margin-bottom: 20px;
+}
+
+.xz2v8_label {
+display: block;
+font-size: 0.85rem;
+color: var(--lp6r4-text-secondary);
+margin-bottom: 8px;
+}
+
+.gt7h3_input {
+width: 100%;
+padding: 12px 15px;
+background-color: var(--yw9k1-input-bg);
+border: 1px solid var(--bn4t6-input-border);
+border-radius: 8px;
+font-size: 0.95rem;
+color: var(--zt5v9-text-primary);
+transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gt7h3_input:focus {
+outline: none;
+border-color: #7c3aed;
+box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+.kp3j7_password_field {
+position: relative;
+}
+
+.rq9t2_toggle_password {
+position: absolute;
+right: 12px;
+top: 50%;
+transform: translateY(-50%);
+background: none;
+border: none;
+cursor: pointer;
+color: var(--lp6r4-text-secondary);
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.zx5c8_submit_btn {
+background: var(--gf2h7-accent-gradient);
+color: var(--cp8m3-button-text);
+border: none;
+border-radius: 8px;
+padding: 12px;
+font-size: 1rem;
+font-weight: 500;
+cursor: pointer;
+margin-top: 10px;
+transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.zx5c8_submit_btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2);
+}
+
+.nh6b2_social_login {
+display: flex;
+gap: 10px;
+margin-top: 30px;
+}
+
+.vm4k9_social_btn {
+flex: 1;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+padding: 10px;
+background: none;
+border: 1px solid var(--qs8w3-social-border);
+border-radius: 8px;
+font-size: 0.9rem;
+color: var(--zt5v9-text-primary);
+cursor: pointer;
+transition: background-color 0.2s ease;
+}
+
+.vm4k9_social_btn:hover {
+background-color: var(--yw9k1-input-bg);
+}
+
+.vm4k9_social_btn svg {
+fill: currentColor;
+}
+
+.nh6b2_signup_prompt {
+margin-top: 20px;
+margin-bottom: 20px;
+text-align: left;
+font-size: 0.9rem;
+color: var(--lp6r4-text-secondary);
+}
+
+.hd2j6_signup_link {
+color: var(--fm6p9-link-color);
+text-decoration: none;
+font-weight: 500;
+margin-left: 5px;
+}
+
+.hd2j6_signup_link:hover {
+text-decoration: underline;
+}
+
+/* Right Panel - Illustration Side */
+.zt5v9_right_panel {
+flex: 1;
+background-color: var(--vb5n8-panel-bg);
+position: relative;
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+padding: 40px;
+color: var(--ek9p4-panel-text);
+background-image: radial-gradient(circle at 10% 20%, rgba(50, 50, 50, 0.2) 0%, transparent 80%);
+}
+
+.lp6r4_theme_toggle {
+position: absolute;
+top: 20px;
+right: 20px;
+}
+
+.gf2h7_theme_btn {
+background: none;
+border: none;
+color: var(--ek9p4-panel-text);
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 8px;
+border-radius: 50%;
+background-color: rgba(255, 255, 255, 0.1);
+}
+
+.yw9k1_sun_icon {
+display: none;
+}
+
+.bn4t6_moon_icon {
+display: block;
+}
+
+[data-theme="dark"] .yw9k1_sun_icon {
+display: block;
+}
+
+[data-theme="dark"] .bn4t6_moon_icon {
+display: none;
+}
+
+.cp8m3_content {
+display: flex;
+flex-direction: column;
+align-items: center;
+text-align: center;
+max-width: 400px;
+}
+
+.jt7r2_bot_illustration {
+width: 200px;
+height: 200px;
+background-size: cover;
+margin-bottom: 20px;
+position: relative;
+}
+
+.jt7r2_bot_illustration::before {
+content: "";
+position: absolute;
+top: -50px;
+left: -50px;
+right: -50px;
+bottom: -50px;
+background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+background-size: 20px 20px;
+z-index: -1;
+}
+
+.vb5n8_brand {
+font-size: 2.5rem;
+font-weight: 100;
+margin-bottom: 10px;
+background: linear-gradient(to right, #7c3aed, #ec4899);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+text-fill-color: transparent;
+}
+
+.ek9p4_tagline {
+font-size: 1.1rem;
+margin-bottom: 30px;
+max-width: 400px;
+}
+
+.hd2j6_features {
+display: flex;
+flex-direction: column;
+gap: 15px;
+width: 100%;
+}
+
+.qs8w3_feature {
+display: flex;
+align-items: center;
+gap: 10px;
+padding: 10px 15px;
+background-color: var(--hd2j6-feature-bg);
+border-radius: 8px;
+font-size: 0.9rem;
+}
+
+.fm6p9_check_icon {
+color: #a855f7;
+font-weight: bold;
+}
+
+/* Styles pour les horaires */
+.jours-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+gap: 10px;
+margin-bottom: 20px;
+padding: 15px;
+background-color: var(--yw9k1-input-bg);
+border-radius: 8px;
+border: 1px solid var(--bn4t6-input-border);
+}
+
+.jour-checkbox-container {
+display: flex;
+align-items: center;
+gap: 8px;
+padding: 8px;
+border-radius: 6px;
+transition: background-color 0.2s;
+}
+
+.jour-checkbox-container:hover {
+background-color: rgba(59, 130, 246, 0.1);
+}
+
+.jour-checkbox {
+width: 18px;
+height: 18px;
+accent-color: var(--primary-color);
+cursor: pointer;
+}
+
+.jour-label {
+font-size: 0.9rem;
+color: var(--zt5v9-text-primary);
+cursor: pointer;
+}
+
+.horaires-container {
+max-height: 400px;
+overflow-y: auto;
+padding-right: 10px;
+}
+
+.horaire-jour {
+background-color: var(--yw9k1-input-bg);
+border: 1px solid var(--bn4t6-input-border);
+border-radius: 8px;
+padding: 15px;
+margin-bottom: 15px;
+position: relative;
+transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.horaire-jour:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.horaire-jour-title {
+font-size: 1rem;
+font-weight: 600;
+color: var(--zt5v9-text-primary);
+margin-bottom: 15px;
+padding-bottom: 8px;
+border-bottom: 1px solid var(--bn4t6-input-border);
+}
+
+.horaire-group {
+margin-bottom: 15px;
+display: flex;
+flex-direction: column;
+gap: 8px;
+}
+
+.horaire-label {
+font-size: 0.85rem;
+color: var(--lp6r4-text-secondary);
+}
+
+.btn-secondary {
+background-color: var(--gray-200);
+color: var(--gray-600);
+border: none;
+border-radius: 6px;
+padding: 8px 12px;
+font-size: 0.85rem;
+cursor: pointer;
+transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+background-color: var(--gray-300);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+.qm3j8_card {
+  flex-direction: column;
+}
+
+.zt5v9_left_panel {
+  padding: 20px;
+}
+
+.jt7r2_form {
+  max-width: 100%;
+}
+
+.zt5v9_right_panel {
+  padding: 40px 20px;
+}
+}
+
+@media (max-width: 600px) {
+.lp6r4_header {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.bn4t6_nav {
+  width: 100%;
+  justify-content: space-between;
+}
+
+.nh6b2_social_login {
+  flex-direction: column;
+}
+
+.jours-grid {
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+}
+}
+</style>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nouveau Professionnel de Santé{% endblock %}
+
+{% block body %}
+    <h1>Créer un nouveau professionnel de santé</h1>
+
+    {{ form_start(form) }}
+        <div>
+            <h2>Informations personnelles</h2>
+            <div>
+                {{ form_row(form.nom, { label: 'Nom' }) }}
+            </div>
+            <div>
+                {{ form_row(form.prenom, { label: 'Prénom' }) }}
+            </div>
+            <div>
+                {{ form_row(form.email, { label: 'Email' }) }}
+            </div>
+            <div>
+                {{ form_row(form.motDePasse, { label: 'Mot de passe' }) }}
+            </div>
+            <div>
+                {{ form_row(form.telephone, { label: 'Téléphone', required: false }) }}
+            </div>
+            <div>
+                {{ form_row(form.adresse, { label: 'Adresse', required: false }) }}
+            </div>
+        </div>
+
+        <div>
+            <h2>Informations professionnelles</h2>
+            <div>
+                {{ form_row(form.tarif, { label: 'Tarif (en €)' }) }}
+            </div>
+            <div>
+                {{ form_row(form.specialite, { label: 'Spécialité' }) }}
+            </div>
+            <div>
+                {{ form_row(form.photo, { label: 'URL de la photo', required: false }) }}
+            </div>
+            <div>
+                {{ form_row(form.geolocalisation, { label: 'Géolocalisation', required: false }) }}
+            </div>
+        </div>
+
+        <div>
+            <h2>Horaires de travail</h2>
+            <ul id="horaires-travail" data-prototype="{{ form_widget(form.horairesTravail.vars.prototype)|e('html_attr') }}">
+                {% for horaire in form.horairesTravail %}
+                    <li>
+                        {{ form_row(horaire.jour, { label: 'Jour' }) }}
+                        {{ form_row(horaire.heureDebut, { label: 'Heure de début' }) }}
+                        {{ form_row(horaire.heureFin, { label: 'Heure de fin' }) }}
+                    </li>
+                {% endfor %}
+            </ul>
+            <button type="button" id="add-horaire">Ajouter un horaire</button>
+        </div>
+
+        <button type="submit">Enregistrer</button>
+    {{ form_end(form) }}
+
+    <script>
+        document.getElementById('add-horaire').addEventListener('click', function () {
+            const container = document.getElementById('horaires-travail');
+            const prototype = container.getAttribute('data-prototype');
+            const index = container.children.length;
+            const newForm = prototype.replace(/__name__/g, index);
+            container.insertAdjacentHTML('beforeend', `<li>${newForm}</li>`);
+        });
+    </script>
+{% endblock %}

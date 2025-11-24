@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+{% block title %}Mon Carnet de Santé{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h1>Mon Carnet de Santé</h1>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5>Paramètres de partage</h5>
+                <form action="{{ path('app_carnet_sante_toggle_share') }}" method="post">
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="shareToggle" 
+                               name="share" {{ patient.carnetPartage ? 'checked' : '' }}
+                               onchange="this.form.submit()">
+                        <label class="form-check-label" for="shareToggle">
+                            {{ patient.carnetPartage ? 'Partagé' : 'Privé' }}
+                        </label>
+                    </div>
+                </form>
+                
+            </div>
+        </div>
+        <div class="card-body">
+            <a href="{{ path('app_carnet_sante_manage') }}" class="btn btn-primary">
+                Gérer les accès
+            </a>
+        </div>
+    </div>
+
+    <h3>Mes Consultations</h3>
+    {% if consultations|length > 0 %}
+        <div class="list-group">
+            {% for consultation in consultations %}
+                <a href="{{ path('app_consultation_show', {'id': consultation.id}) }}" 
+                   class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ consultation.rendezVous.professionnel.nom }}</h5>
+                        <small>{{ consultation.date|date('d/m/Y') }}</small>
+                    </div>
+                    <p class="mb-1">{{ consultation.notes }}</p>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">Aucune consultation enregistrée</div>
+    {% endif %}
+</div>
+{% endblock %}

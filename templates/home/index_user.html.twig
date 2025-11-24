@@ -1,0 +1,985 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Tableau de Bord - Docarya{% endblock %}
+
+{% block body %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1 class="welcome-title">Bienvenue sur votre espace santé</h1>
+            <p class="welcome-subtitle">Gérez vos rendez-vous et consultations en toute simplicité</p>
+        </div>
+        <div class="header-illustration">
+            <div class="illustration-circle"></div>
+        </div>
+    </div>
+
+    <div class="dashboard-tabs">
+        <ul class="nav-tabs" id="dashboardTabs" role="tablist">
+            {% if not is_granted('ROLE_PROFESSIONNEL_DE_SANTE') %}
+                <li class="tab-item" role="presentation">
+                    <button class="tab-button active" id="professionals-tab" data-bs-toggle="tab" data-bs-target="#professionals" type="button" role="tab">
+                        <i class="fas fa-user-md"></i>
+                        <span>Professionnels de santé</span>
+                    </button>
+                </li>
+            {% endif %}
+            {% if not is_granted('ROLE_ADMINISTRATEUR') %}
+                <li class="tab-item" role="presentation">
+                    <button class="tab-button {% if is_granted('ROLE_PROFESSIONNEL_DE_SANTE') %}active{% endif %}" id="appointments-tab" data-bs-toggle="tab" data-bs-target="#appointments" type="button" role="tab">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>Mes rendez-vous</span>
+                    </button>
+                </li>
+                <li class="tab-item" role="presentation">
+                    <button class="tab-button" id="consultations-tab" data-bs-toggle="tab" data-bs-target="#consultations" type="button" role="tab">
+                        <i class="fas fa-notes-medical"></i>
+                        <span>Mes consultations</span>
+                    </button>
+                </li>
+            {% endif %}
+        </ul>
+
+        <div class="tab-content" id="dashboardTabsContent">
+            {# Section Professionnels de santé - cachée pour les professionnels #}
+            {% if not is_granted('ROLE_PROFESSIONNEL_DE_SANTE') %}
+                <div class="tab-pane fade show active" id="professionals" role="tabpanel">
+                    <div class="section-header">
+                        <h2 class="section-title">Professionnels de santé</h2>
+                        <a href="{{ path('app_search') }}" class="view-all-link">
+                            <span>Rechercher</span>
+                            <i class="fas fa-search"></i>
+                        </a>
+                    </div>
+
+                    {% if professionnels|length > 0 %}
+                        <div class="professionals-grid">
+                            {% for item in professionnels|slice(0, 3) %}
+                                <div class="professional-card">
+                                    {% if item.professionnel.photo != NULL %}
+                                        <img src="{{ asset('uploads/professionnels/resized/' ~ item.professionnel.photo|replace({
+                                            '.jpg': '_resized.jpg',
+                                            '.png': '_resized.png',
+                                            '.gif': '_resized.gif'
+                                        })) }}"
+                                        alt="Photo de {{ item.professionnel.prenom }} {{ item.professionnel.nom }}"
+                                        class="professional-avatar"
+                                        onerror="this.src='https://ui-avatars.com/api/?name={{ item.professionnel.prenom|url_encode }}+{{ item.professionnel.nom|url_encode }}&background=3a86ff&color=fff&size=150'">
+                                    {% else %}
+                                        <div class="professional-avatar">
+                                            <i class="fas fa-user-md"></i>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="professional-info">
+                                        <h3 class="professional-name">{{ item.professionnel.nom }}</h3>
+                                        <p class="professional-specialty">{{ item.professionnel.specialite.nom }}</p>
+                                        <p class="professional-location">
+                                            <i class="fas fa-map-marker-alt"></i> {{ item.professionnel.adresse }}
+                                        </p>
+                                        <a href="#" class="zx5c8_profile_btn btn btn-primary me-2 d-inline-flex align-items-center"
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#profilModal{{ item.professionnel.id }}">
+                                            Voir le profil
+                                            <i class="fas fa-arrow-right"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <!-- Modal Profil pour chaque professionnel -->
+                                <div class="modal fade" id="profilModal{{ item.professionnel.id }}" tabindex="-1" aria-labelledby="profilModalLabel{{ item.professionnel.id }}" aria-hidden="true">
+                                  <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h5 class="modal-title" id="profilModalLabel{{ item.professionnel.id }}">
+                                          Profil de Dr. {{ item.professionnel.prenom }} {{ item.professionnel.nom }}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                      </div>
+                                      <div class="modal-body">
+                                        {% include 'home/professionnel_show.html.twig' with {
+                                          professionnel: item.professionnel,
+                                          moyenneNotes: item.moyenneNotes|default(0),
+                                          nbAvis: item.nbAvis|default(0),
+                                          avisList: item.avisList|default([]),
+                                          horairesTravail: item.horairesTravail|default([])
+                                        } %}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if professionnels|length > 3 %}
+                            <div class="view-more-container">
+                                <a href="{{ path('app_search') }}" class="view-more-button">
+                                    Voir plus de professionnels
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <p class="empty-text">Aucun professionnel disponible pour le moment.</p>
+                            <a href="{{ path('app_search') }}" class="empty-action">
+                                Rechercher un professionnel
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+
+            {# Section Rendez-vous #}
+            {% if app.user %}
+                <div class="tab-pane fade {% if is_granted('ROLE_PROFESSIONNEL_DE_SANTE') %}show active{% endif %}" id="appointments" role="tabpanel">
+                    <div class="section-header">
+                        <h2 class="section-title">Mes prochains rendez-vous</h2>
+                        <a href="{{ path('app_rendez_vous_index') }}" class="view-all-link">
+                            <span>Voir tous</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+
+                    {% if rendez_vouses|length > 0 %}
+                        <div class="appointments-list">
+                            {% for rdv in rendez_vouses|slice(0, 5) %}
+                                <div class="appointment-card">
+                                    <div class="appointment-date">
+                                        <div class="date-day">{{ rdv.dateheure|date('d') }}</div>
+                                        <div class="date-month">{{ rdv.dateheure|date('M') }}</div>
+                                    </div>
+                                    <div class="appointment-details">
+                                        <h3 class="appointment-title">
+                                            {% if is_granted('ROLE_PROFESSIONNEL_DE_SANTE') %}
+                                                Rendez-vous avec {{ rdv.patient.nom }}
+                                            {% else %}
+                                                Rendez-vous avec {{ rdv.professionnel.nom }}
+                                            {% endif %}
+                                        </h3>
+                                        <p class="appointment-time">
+                                            <i class="fas fa-clock"></i> {{ rdv.dateheure|date('H:i') }} - {{ rdv.dateheure|date('d/m/Y') }}
+                                        </p>
+                                        <p class="appointment-reason">
+                                            <i class="fas fa-clipboard"></i> {{ rdv.motif }}
+                                        </p>
+                                    </div>
+                                    <p class="appointment-status{% if rdv.statut|lower|trim == 'annule' or rdv.statut|lower|trim == 'annulé' %} status-annule{% elseif rdv.statut|lower|trim == 'en attente' %} status-attente{% endif %}">
+    Statut : {{ rdv.statut|capitalize }}
+</p>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if rendez_vouses|length > 5 %}
+                            <div class="view-more-container">
+                                <a href="{{ path('app_rendez_vous_index') }}" class="view-more-button">
+                                    Voir tous mes rendez-vous
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <p class="empty-text">Vous n'avez aucun rendez-vous programmé.</p>
+                            {% if not is_granted('ROLE_PROFESSIONNEL_DE_SANTE') %}
+                                <a href="{{ path('app_search') }}" class="empty-action">
+                                    Prendre un rendez-vous
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                {# Section Consultations #}
+                <div class="tab-pane fade" id="consultations" role="tabpanel">
+                    <div class="section-header">
+                        <h2 class="section-title">Mes dernières consultations</h2>
+                        <a href="{{ path('app_consultation_index') }}" class="view-all-link">
+                            <span>Voir toutes</span>
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+
+                    {% if consultations|length > 0 %}
+                        <div class="consultations-list">
+                            {% for consultation in consultations|slice(0, 5) %}
+                                <div class="consultation-card">
+                                    <div class="consultation-date">
+                                        <div class="date-day">{{ consultation.date|date('d') }}</div>
+                                        <div class="date-month">{{ consultation.date|date('M') }}</div>
+                                    </div>
+                                    <div class="consultation-details">
+                                        <h3 class="consultation-title">
+                                            {% if is_granted('ROLE_PROFESSIONNEL_DE_SANTE') %}
+                                                Consultation avec {{ consultation.rendezVous.patient.nom }}
+                                            {% else %}
+                                                Consultation médicale
+                                            {% endif %}
+                                        </h3>
+                                        <p class="consultation-reason">
+                                            <i class="fas fa-clipboard"></i> {{ consultation.rendezvous.motif }}
+                                        </p>
+                                        <p class="consultation-diagnosis">
+                                            <i class="fas fa-stethoscope"></i> {{ consultation.notes|length > 50 ? consultation.notes|slice(0, 50) ~ '...' : consultation.notes }}
+                                        </p>
+                                    </div>
+                                    <div class="consultation-actions">
+                                        <a href="{{ path('app_consultation_show', {'id': consultation.id}) }}" class="action-button">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        
+                        {% if consultations|length > 5 %}
+                            <div class="view-more-container">
+                                <a href="{{ path('app_consultation_index') }}" class="view-more-button">
+                                    Voir toutes mes consultations
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-notes-medical"></i>
+                            </div>
+                            <p class="empty-text">Vous n'avez aucune consultation enregistrée.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary: #7c3aed;
+            --primary-dark: #5b21b6;
+            --primary-light: #a855f7;
+            --secondary: #ec4899;
+            --secondary-dark: #be185d;
+            --secondary-light: #f9a8d4;
+            --background: #fdf2ff;
+            --card-bg: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --radius: 0.5rem;
+            --radius-lg: 1rem;
+            --transition: all 0.2s ease;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.5;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            background: linear-gradient(to right, var(--primary-light), var(--secondary-light));
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
+            max-width: 60%;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+        }
+
+        .header-illustration {
+            position: relative;
+            z-index: 1;
+        }
+
+        .illustration-circle {
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            position: absolute;
+            right: -50px;
+            top: -100px;
+        }
+
+        /* Dashboard Tabs */
+        .dashboard-tabs {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            background-color: #f1f5f9;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab-item {
+            flex: 1;
+        }
+
+        .tab-button {
+            width: 100%;
+            padding: 1rem;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .tab-button i {
+            font-size: 1.1rem;
+        }
+
+        .tab-button.active {
+            color: var(--primary);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+        }
+
+        .tab-button:hover:not(.active) {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        .tab-content {
+            padding: 1.5rem;
+        }
+
+        .tab-pane {
+            display: none;
+        }
+
+        .tab-pane.show {
+            display: block;
+        }
+
+        /* Section Header */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .view-all-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .view-all-link:hover {
+            color: var(--secondary-dark);
+        }
+
+        /* Professionals Grid */
+        .professionals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .professional-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            transition: var(--transition);
+            border: 1px solid var(--border);
+        }
+
+        .professional-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .professional-avatar {
+            max-width: 60px;
+            max-height: 60px;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary-light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+            font-size: 1.5rem;
+        }
+
+        .professional-info {
+            flex: 1;
+        }
+
+        .professional-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .professional-specialty {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 500;
+            margin: 0 0 0.5rem 0;
+        }
+
+        .professional-location {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin: 0 0 1rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .professional-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .professional-link:hover {
+            color: var(--secondary-dark);
+        }
+
+        /* Appointments List */
+        .appointments-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .appointment-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+            border: 1px solid var(--border);
+        }
+
+        .appointment-card:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-light);
+        }
+
+        .appointment-date {
+            min-width: 60px;
+            height: 60px;
+            background-color: var(--primary-light);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-dark);
+        }
+
+        .date-day {
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .date-month {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+
+        .appointment-details {
+            flex: 1;
+        }
+
+        .appointment-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .appointment-time, .appointment-reason {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0 0 0.25rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .appointment-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--secondary-light);
+            color: var(--secondary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .action-button:hover {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        /* Consultations List */
+        .consultations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .consultation-card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: var(--transition);
+            border: 1px solid var(--border);
+        }
+
+        .consultation-card:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--secondary-light);
+        }
+
+        .consultation-date {
+            min-width: 60px;
+            height: 60px;
+            background-color: var(--secondary-light);
+            border-radius: var(--radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--secondary-dark);
+        }
+
+        .consultation-details {
+            flex: 1;
+        }
+
+        .consultation-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .consultation-reason, .consultation-diagnosis {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0 0 0.25rem 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* View More Button */
+        .view-more-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .view-more-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .view-more-button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        /* Empty State */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #f1f5f9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-text {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .empty-action:hover {
+            background-color: var(--secondary-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .dashboard-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 1.5rem;
+            }
+
+            .header-content {
+                max-width: 100%;
+                margin-bottom: 1.5rem;
+            }
+
+            .welcome-title {
+                font-size: 1.5rem;
+            }
+
+            .welcome-subtitle {
+                font-size: 1rem;
+            }
+
+            .professionals-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tab-button span {
+                display: none;
+            }
+
+            .tab-button i {
+                font-size: 1.3rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .dashboard-container {
+                padding: 1rem 0.5rem;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .professional-card, .appointment-card, .consultation-card {
+                padding: 1rem;
+            }
+
+            .professional-avatar, .appointment-date, .consultation-date {
+                width: 50px;
+                height: 50px;
+            }
+
+            .professional-name, .appointment-title, .consultation-title {
+                font-size: 1rem;
+            }
+        }
+        .appointment-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+            color: #222;
+            background: #f7f7f7;
+            font-weight: 600;
+            margin-top: 8px;
+            transition: all 0.2s;
+        }
+        .status-annule {
+            border-color: #e53935 !important;
+            background: #e53935 !important;
+            color: #fff !important;
+        }
+        .status-attente {
+            border-color: #fbc02d !important;
+            background: #fbc02d !important;
+            color: #fff !important;
+        }
+    .leaflet-container,
+    .map-modal {
+        width: 100% !important;
+        height: 300px !important;
+        min-width: 300px !important;
+        min-height: 200px !important;
+        box-sizing: border-box;
+    }
+    .map-modal {
+        /* background: #e0e7ef !important; */
+    }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    $(document).ready(function() {
+        $('.modal').on('shown.bs.modal', function () {
+            var mapDiv = $(this).find('.map-modal')[0];
+            if (mapDiv && !mapDiv.classList.contains('leaflet-container') && mapDiv.offsetWidth > 400) {
+                var lat = parseFloat(mapDiv.getAttribute('data-lat')) || 48.8566;
+                var lng = parseFloat(mapDiv.getAttribute('data-lng')) || 2.3522;
+                var map = L.map(mapDiv).setView([lat, lng], 15);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors'
+                }).addTo(map);
+                L.marker([lat, lng]).addTo(map);
+                setTimeout(function() { map.invalidateSize(); }, 350);
+                setTimeout(function() { map.invalidateSize(); }, 800);
+                setTimeout(function() { map.invalidateSize(); }, 1200);
+            }
+        });
+        $('.modal').on('hidden.bs.modal', function () {
+            var mapDiv = $(this).find('.map-modal')[0];
+            if (mapDiv && mapDiv._leaflet_id) {
+                mapDiv._leaflet_id = null;
+                mapDiv.innerHTML = '';
+            }
+        });
+    });
+    document.addEventListener('DOMContentLoaded', function() {
+        var mapDiv = document.querySelector('.map-modal');
+        if (mapDiv) {
+            console.log('TEST: Init carte directe sur .map-modal', mapDiv);
+            var lat = parseFloat(mapDiv.getAttribute('data-lat')) || 48.8566;
+            var lng = parseFloat(mapDiv.getAttribute('data-lng')) || 2.3522;
+            var map = L.map(mapDiv).setView([lat, lng], 15);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+            L.marker([lat, lng]).addTo(map);
+        } else {
+            console.log('TEST: Aucun .map-modal trouvé au chargement');
+        }
+            // Active le tab sauvegardé ou le premier tab
+            const savedTab = localStorage.getItem('lastTab');
+            if (savedTab) {
+                const tabEl = document.querySelector(savedTab);
+                if (tabEl) {
+                    const tab = new bootstrap.Tab(tabEl);
+                    tab.show();
+                }
+            }
+
+            // Sauvegarde le dernier tab actif
+            const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
+            tabEls.forEach(tabEl => {
+                tabEl.addEventListener('click', function() {
+                    localStorage.setItem('lastTab', this.getAttribute('data-bs-target'));
+                    
+                    // Gestion manuelle des classes active pour l'affichage
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Gestion manuelle de l'affichage des panneaux
+                    const target = this.getAttribute('data-bs-target');
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.remove('show', 'active');
+                    });
+                    document.querySelector(target).classList.add('show', 'active');
+                });
+            });
+            
+            // Animation des cartes au chargement
+            const cards = document.querySelectorAll('.professional-card, .appointment-card, .consultation-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+
+            // Initialisation dynamique de la carte Leaflet dans le modal profil
+            var modals = document.querySelectorAll('.modal');
+            modals.forEach(function(modal) {
+                console.log('Ajout listener shown.bs.modal sur', modal);
+                modal.addEventListener('shown.bs.modal', function (event) {
+                    console.log('Modal ouvert, tentative d\'init carte', modal);
+                    var mapDiv = modal.querySelector('.map-modal');
+                    console.log('Init carte modal', mapDiv);
+                    if (!mapDiv) {
+                        console.warn('Aucun div .map-modal trouvé dans le modal, annulation de l\'init Leaflet');
+                        return;
+                    }
+                    mapDiv.style.height = '300px';
+                    if (mapDiv._leaflet_id) {
+                        try {
+                            mapDiv._leaflet_id = null;
+                            mapDiv.innerHTML = '';
+                        } catch (e) {}
+                    }
+                    var tryCount = 0;
+                    function tryInitMap() {
+                        if (!mapDiv) {
+                            console.warn('Div .map-modal disparu, annulation de l\'init Leaflet');
+                            return;
+                        }
+                        var w = mapDiv.offsetWidth;
+                        var h = mapDiv.offsetHeight;
+                        if (w > 0 && h > 0) {
+                            if (mapDiv.classList.contains('leaflet-container')) {
+                                console.log('Carte déjà initialisée, on skip');
+                                return;
+                            }
+                            var lat = parseFloat(mapDiv.getAttribute('data-lat')) || 48.8566;
+                            var lng = parseFloat(mapDiv.getAttribute('data-lng')) || 2.3522;
+                            var map = L.map(mapDiv).setView([lat, lng], 15);
+                            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '&copy; OpenStreetMap contributors'
+                            }).addTo(map);
+                            L.marker([lat, lng]).addTo(map);
+                            setTimeout(function() { map.invalidateSize(); }, 350);
+                            console.log('Carte Leaflet initialisée', map);
+                        } else if (tryCount < 5) {
+                            tryCount++;
+                            setTimeout(tryInitMap, 200);
+                        } else {
+                            console.warn('Impossible d\'initialiser la carte Leaflet : div invisible');
+                        }
+                    }
+                    setTimeout(tryInitMap, 200);
+                });
+            });
+        });
+    </script>
+{% endblock %}

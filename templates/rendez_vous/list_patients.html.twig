@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+    {% block body %}
+        <h1>Liste des patients</h1>
+        <ul>
+            {% for patient in patients %}
+                <li>{{ patient.nom }} {{ patient.prenom }}</li>
+            {% else %}
+                <li>Aucun patient trouvé.</li>
+            {% endfor %}
+        </ul>
+    {% endblock %}

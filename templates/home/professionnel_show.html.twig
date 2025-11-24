@@ -1,0 +1,931 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Détails du Professionnel de Santé - {{ professionnel.nom }} {{ professionnel.prenom }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        :root {
+            --primary-color: #7c3aed;
+            --primary-dark: #5b21b6;
+            --secondary-color: #ec4899;
+            --secondary-dark: #be185d;
+            --accent-color: #f97316;
+            --light-color: #f8fafc;
+            --dark-color: #1e293b;
+            --gray-color: #64748b;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        /* Base Styles */
+        .professional-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Flash Messages */
+        .alert {
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: rgba(74, 222, 128, 0.2);
+            color: var(--primary-dark);
+            border: 1px solid var(--primary-color);
+        }
+
+        .alert-danger {
+            background-color: rgba(244, 63, 94, 0.2);
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+        }
+
+        .alert-warning {
+            background-color: rgba(251, 191, 36, 0.2);
+            color: #d97706;
+            border: 1px solid #fbbf24;
+        }
+
+        .alert-info {
+            background-color: rgba(59, 130, 246, 0.2);
+            color: var(--secondary-dark);
+            border: 1px solid var(--secondary-color);
+        }
+        
+        /* Profil Header */
+        .profile-header {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            overflow: visible;
+        }
+
+        .profile-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='rgba(255,255,255,.075)' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            pointer-events: none; /* Pour éviter les interactions avec l'utilisateur */
+        }
+
+        /* Conteneur de l'image de profil */
+        .profile-image-container {
+            display: flex;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Image de profil */
+        .profile-image {
+            margin-top: -35px;
+            width: 200px; /* Utilisation de variables CSS pour la taille */
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            background-color: white;
+        }
+        
+        /* Profile Info */
+        .profile-info {
+            background: white;
+            padding: 2rem;
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .profile-name {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .profile-title {
+            font-size: 1.25rem;
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .profile-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-color);
+        }
+
+        .meta-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--primary-color);
+        }
+
+        /* Two Column Layout */
+        .profile-content {
+            /* display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem; */
+            margin-bottom: 2rem;
+        }
+
+        @media (max-width: 992px) {
+            .profile-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Details Section */
+        .details-section {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        .detail-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .detail-value {
+            color: var(--gray-color);
+        }
+
+        /* Schedule Section */
+        .schedule-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .schedule-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .schedule-item:last-child {
+            border-bottom: none;
+        }
+
+        .schedule-day {
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .schedule-hours {
+            color: var(--gray-color);
+        }
+
+        /* Appointment Form */
+        .appointment-form {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px;
+        }
+
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--secondary-color);
+            border: 1px solid var(--secondary-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+
+        /* Calendar Link */
+        .calendar-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background-color: #f8fafc;
+            border-radius: var(--border-radius);
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .calendar-link:hover {
+            background-color: #f1f5f9;
+            transform: translateY(-2px);
+        }
+
+        .calendar-icon {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Back Link */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gray-color);
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 2rem;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--dark-color);
+        }
+
+        .back-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Map Styles */
+        #map {
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: var(--transition);
+        }
+
+        #map:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .leaflet-popup-content {
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: 8px;
+        }
+
+        /* Avis Section */
+        .avis-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin-bottom: 2rem;
+        }
+
+        .avis-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+        }
+
+        .avis-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin: 0;
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        .avis-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        .avis-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .avis-link:hover {
+            color: var(--secondary-dark);
+            transform: translateX(5px);
+        }
+
+        .avis-summary {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .avis-rating {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .rating-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            line-height: 1;
+        }
+
+        .rating-label {
+            font-size: 0.875rem;
+            color: var(--gray-color);
+            margin-top: 0.25rem;
+        }
+
+        .rating-stars {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .star {
+            color: #fbbf24;
+            font-size: 1.5rem;
+        }
+
+        .star-empty {
+            color: #e2e8f0;
+        }
+
+        .avis-count {
+            font-size: 0.875rem;
+            color: var(--gray-color);
+        }
+
+        .avis-preview {
+            margin-top: 1rem;
+        }
+
+        .avis-item {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            background-color: #f8fafc;
+            margin-bottom: 1rem;
+        }
+
+        .avis-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .avis-item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .avis-item-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .avis-item-stars {
+            display: flex;
+            gap: 0.1rem;
+        }
+
+        .avis-item-star {
+            color: #fbbf24;
+            font-size: 1rem;
+        }
+
+        .avis-item-star-empty {
+            color: #e2e8f0;
+            font-size: 1rem;
+        }
+
+        .avis-item-date {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+        }
+
+        .avis-item-content {
+            color: var(--dark-color);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .avis-item-author {
+            font-size: 0.8rem;
+            color: var(--gray-color);
+            font-style: italic;
+            margin-top: 0.5rem;
+            text-align: right;
+        }
+
+        .no-avis {
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--gray-color);
+            font-style: italic;
+            background-color: #f8fafc;
+            border-radius: 0.5rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .profile-header {
+                height: 150px;
+            }
+
+            .profile-name {
+                font-size: 1.5rem;
+            }
+
+            .profile-title {
+                font-size: 1rem;
+            }
+
+            .details-section, .appointment-form, .profile-info, .avis-section {
+                padding: 1.5rem;
+            }
+
+            .avis-summary {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .profile-header {
+                height: 120px;
+            }
+
+            .profile-image {
+                width: 120px;
+                height: 120px;
+            }
+
+            .profile-meta {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .avis-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="professional-container">
+        {# Afficher les messages flash #}
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+        
+        <!-- Profile Header -->
+        <div class="profile-header">
+            {% if professionnel.photo is defined and professionnel.photo != NULL %}
+                <div class="profile-image-container">
+                <img src="{{ asset('uploads/professionnels/resized/' ~ professionnel.photo|replace({
+                    '.jpg': '_resized.jpg',
+                    '.png': '_resized.png',
+                    '.gif': '_resized.gif'
+                    })) }}" 
+                    alt="Photo de {{ professionnel.prenom }} {{ professionnel.nom }}" 
+                    class="profile-image"
+                    onerror="this.src='https://ui-avatars.com/api/?name={{ professionnel.prenom|url_encode }}+{{ professionnel.nom|url_encode }}&background=3a86ff&color=fff&size=150'">
+                </div>
+            {% else %}
+                <div class="profile-image-container">
+                    <img src="{{ asset('images/doctor-placeholder.jpg') }}" 
+                        alt="{{ professionnel.nom }} {{ professionnel.prenom }}" 
+                        class="profile-image"
+                        onerror="this.src='https://ui-avatars.com/api/?name={{ professionnel.nom|url_encode }}+{{ professionnel.prenom|url_encode }}&background=4ade80&color=fff&size=150'">
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Profile Info -->
+        <div class="profile-info">
+            <h1 class="profile-name">{{ professionnel.nom }} {{ professionnel.prenom }}</h1>
+            <div class="profile-title">{{ professionnel.specialite.nom }}</div>
+            
+            <div class="profile-meta">
+                <div class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    <span>Voir la carte ci-dessous</span>
+                </div>
+                
+                <div class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>{{ professionnel.tarif }} Ariary / consultation</span>
+                </div>
+                
+                <div class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                    </svg>
+                    <span>{{ professionnel.specialite.statut }}</span>
+                </div>
+                
+                <div class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path>
+                    </svg>
+                    <span>
+                        {% if moyenneNotes is defined and moyenneNotes > 0 %}
+                            {{ moyenneNotes|number_format(1, ',', '') }}/5 ({{ nbAvis|default(0) }} avis)
+                        {% else %}
+                            Aucun avis
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Calendar Link -->
+            <a href="{{ path('app_professionnel_de_sante_calendrier', {'id': professionnel.id}) }}" class="calendar-link">
+                <svg class="calendar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span>Voir le calendrier de disponibilité</span>
+            </a>
+        </div>
+        
+        <!-- Two Column Layout -->
+        <div class="profile-content">
+            <!-- Left Column: Details -->
+            <div>
+                <!-- Avis Section -->
+                <div class="avis-section">
+                    <div class="avis-header">
+                        <h2 class="avis-title">Avis des patients</h2>
+                        <a href="{{ path('app_professionnel_avis', {'id': professionnel.id}) }}" class="avis-link">
+                            <span>Voir tous les avis</span>
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                            </svg>
+                        </a>
+                    </div>
+                    
+                    <div class="avis-summary">
+                        {% if moyenneNotes is defined and moyenneNotes > 0 %}
+                            <div class="avis-rating">
+                                <span class="rating-value">{{ moyenneNotes|number_format(1, ',', '') }}</span>
+                                <span class="rating-label">sur 5</span>
+                            </div>
+                            
+                            <div class="rating-stars">
+                                {% for i in 1..5 %}
+                                    {% if i <= moyenneNotes %}
+                                        <span class="star">★</span>
+                                    {% elseif i <= moyenneNotes + 0.5 %}
+                                        <span class="star">★</span>
+                                    {% else %}
+                                        <span class="star star-empty">☆</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            
+                            <div class="avis-count">
+                                Basé sur {{ nbAvis|default(0) }} avis
+                            </div>
+                        {% else %}
+                            <div class="no-avis">
+                                Aucun avis pour ce professionnel
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    {% if avisList is defined and avisList|length > 0 %}
+                        <div class="avis-preview">
+                            {% for avis in avisList|slice(0, 2) %}
+                                <div class="avis-item">
+                                    <div class="avis-item-header">
+                                        <div class="avis-item-rating">
+                                            <div class="avis-item-stars">
+                                                {% for i in 1..5 %}
+                                                    {% if i <= avis.note %}
+                                                        <span class="avis-item-star">★</span>
+                                                    {% else %}
+                                                        <span class="avis-item-star-empty">☆</span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                        <div class="avis-item-date">
+                                            {{ avis.createdAt|date('d/m/Y') }}
+                                        </div>
+                                    </div>
+                                    <div class="avis-item-content">
+                                        {{ avis.commentaire|default('Aucun commentaire laissé par ce patient.')|slice(0, 150) }}
+                                        {% if avis.commentaire|length > 150 %}...{% endif %}
+                                    </div>
+                                    <div class="avis-item-author">
+                                        Par {{ avis.patient.prenom }} {{ avis.patient.nom|first }}.
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            
+                            {% if avisList|length > 2 %}
+                                <div class="text-center" style="margin-top: 1rem;">
+                                    <a href="{{ path('app_professionnel_avis', {'id': professionnel.id}) }}" class="avis-link">
+                                        <span>Voir les {{ avisList|length - 2 }} autres avis</span>
+                                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="details-section">
+                    <h2 class="section-title">Informations professionnelles</h2>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Spécialité</span>
+                        <div class="detail-value">{{ professionnel.specialite.nom }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Catégorie</span> 
+                        <div class="detail-value">{{ professionnel.specialite.categorie }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Sous-catégorie</span>
+                        <div class="detail-value">{{ professionnel.specialite.sousCategorie }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Statut</span>
+                        <div class="detail-value">{{ professionnel.specialite.statut }}</div>
+                    </div>
+                    
+                    <div class="detail-item">
+                        <span class="detail-label">Tarif</span>
+                        <div class="detail-value">{{ professionnel.tarif }} Ariary</div>
+                    </div>
+                    
+                    <h3 class="section-title">Horaires de travail</h3>
+                    {% if horairesTravail is defined and horairesTravail is iterable and horairesTravail|length > 0 %}
+                        <ul class="schedule-list">
+                            {% for horaire in horairesTravail %}
+                                <li class="schedule-item">
+                                    <span class="schedule-day">{{ horaire.jour }}</span>
+                                    <span class="schedule-hours">{{ horaire.heureDebut }} - {{ horaire.heureFin }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <div class="meta-item">Aucun horaire renseigné</div>
+                    {% endif %}
+                    
+                    <div class="detail-item">
+                        <h3 class="section-title">Localisation</h3>
+                        {% if professionnel.latitude is defined and professionnel.longitude is defined %}
+                            <div id="map-modal-{{ professionnel.id }}" class="map-modal" data-lat="{{ professionnel.latitude ?? 48.8566 }}" data-lng="{{ professionnel.longitude ?? 2.3522 }}" style="height: 300px; width: 100%; min-width: 300px; min-height: 200px; border-radius: var(--border-radius); margin-top: 1rem;"></div>
+                        {% else %}
+                            <div style="color:red;font-weight:bold;">PAS DE DIV CARTE: professionnel.latitude ou longitude non défini</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+{#             
+            <!-- Right Column: Appointment Form -->
+            <div class="appointment-form">
+                <h2 class="section-title">Demande de rendez-vous</h2>
+                
+                {{ form_start(form, {'attr': {'class': 'appointment-request-form'}}) }}
+                    {% for field in form %}
+                        <div class="form-group">
+                            {{ form_label(field, null, {'label_attr': {'class': 'form-label'}}) }}
+                            
+                            {% if field.vars.block_prefixes[1] == 'textarea' %}
+                                {{ form_widget(field, {'attr': {'class': 'form-textarea'}}) }}
+                            {% elseif field.vars.block_prefixes[1] == 'choice' %}
+                                {{ form_widget(field, {'attr': {'class': 'form-select'}}) }}
+                            {% else %}
+                                {{ form_widget(field, {'attr': {'class': 'form-control'}}) }}
+                            {% endif %}
+                            
+                            {% if field.vars.errors|length > 0 %}
+                                <div class="form-error">
+                                    {{ form_errors(field) }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    
+                    <button type="submit" class="btn btn-primary btn-block">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Demander un rendez-vous
+                    </button>
+                {{ form_end(form) }}
+            </div> #}
+        </div>
+        
+        <!-- Back Link -->
+        <a href="{{ path('app_public_home') }}" class="back-link">
+            <svg class="back-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Retour à la liste des professionnels
+        </a>
+    </div>
+    
+    {# Leaflet CSS #}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    {# Leaflet JS #}
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Coordonnées du professionnel (valeurs par défaut si non définies)
+      const lat = {{ professionnel.latitude ?? 48.8566 }};
+      const lng = {{ professionnel.longitude ?? 2.3522 }};
+      
+      // Initialisation de la carte
+      const map = L.map('map').setView([lat, lng], 15);
+      
+      // Ajout du fond de carte
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+      
+      // Ajout d'un marqueur
+      L.marker([lat, lng]).addTo(map)
+          .bindPopup("{{ professionnel.nom }} {{ professionnel.prenom }}<br>{{ professionnel.specialite.nom }}")
+          .openPopup();
+      
+      // Optionnel: Ajouter un cercle pour indiquer une zone de pratique
+      L.circle([lat, lng], {
+          color: '#4ade80',
+          fillColor: '#4ade80',
+          fillOpacity: 0.2,
+          radius: 500 // 500m de rayon
+      }).addTo(map);
+    });
+    </script>
+{% endblock %}

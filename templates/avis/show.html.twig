@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Avis #{{ avis.id }}{% endblock %}
+
+{% block body %}
+    <h1>Avis #{{ avis.id }}</h1>
+
+    <div>
+        <div>
+            <h2>Patient</h2>
+            <p>{{ avis.patient.nom }}</p>
+        </div>
+        <div>
+            <h2>Professionnel</h2>
+            <p>{{ avis.professionnel.nom }}</p>
+        </div>
+        <div>
+            <h2>Note</h2>
+            <p>
+                {% for i in 1..5 %}
+                    {% if i <= avis.note %}★{% else %}☆{% endif %}
+                {% endfor %}
+                ({{ avis.note }}/5)
+            </p>
+        </div>
+        <div>
+            <h2>Date</h2>
+            <p>{{ avis.createdAt|date('d/m/Y H:i') }}</p>
+        </div>
+        <div>
+            <h2>Commentaire</h2>
+            <p>{{ avis.commentaire|nl2br }}</p>
+        </div>
+    </div>
+
+    <a href="{{ path('app_avis_index') }}">Retour</a>
+    {% if is_granted('EDIT', avis) %}
+        <a href="{{ path('app_avis_edit', {'id': avis.id}) }}">Modifier</a>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sélectionner votre statut{% endblock %}
+
+{% block body %}
+    <div class="status-selection-container">
+        <div class="status-header">
+            <p class="status-kicker">Étape 1 sur 2</p>
+            <h1 class="title">Sélectionner votre statut</h1>
+            <p class="status-subtitle">Choisissez le profil qui vous correspond pour personnaliser votre expérience Docarya.</p>
+        </div>
+
+        <div class="status-layout">
+            <div class="cards-wrapper">
+                <!-- Carte pour "Je suis un particulier" -->
+                <div class="status-card">
+                    <div class="icon-wrapper">
+                        <img src="{{ asset('images/patient.png') }}" alt="Patient" class="status-icon">
+                    </div>
+                    <h3 class="card-title">Je suis un particulier</h3>
+                    <form method="POST" action="{{ path('app_register_step2', {'role': 'patient'}) }}">
+                        <button type="submit" class="button">Continuer</button>
+                    </form>
+                </div>
+
+                <!-- Carte pour "Je suis un professionnel" -->
+                <div class="status-card">
+                    <div class="icon-wrapper">
+                        <img src="{{ asset('images/pro.png') }}" alt="Professionnel" class="status-icon">
+                    </div>
+                    <h3 class="card-title">Je suis un professionnel</h3>
+                    <form method="POST" action="{{ path('app_register_step2', {'role': 'professionnel_de_sante'}) }}">
+                        <button type="submit" class="button">Continuer</button>
+                    </form>
+                </div>
+            </div>
+
+            <aside class="status-side-panel">
+                <h2 class="status-side-title">Pourquoi Docarya&nbsp;?</h2>
+                <ul class="status-side-list">
+                    <li class="status-side-item">Gestion simplifiée de vos rendez-vous santé.</li>
+                    <li class="status-side-item">Visibilité claire entre espace patient et espace professionnel.</li>
+                    <li class="status-side-item">Plateforme sécurisée, pensée pour le quotidien médical.</li>
+                </ul>
+            </aside>
+        </div>
+    </div>
+	{{ include('registration/style.html.twig') }}
+{% endblock %}

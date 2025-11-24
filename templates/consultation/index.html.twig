@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Consultations{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ include('consultation/style.html.twig') }}
+  {% endblock %}
+
+{% block body %}
+    {{ include('consultation/function.html.twig') }}
+
+    <div class="consultation-container">
+        <h5>Paramètres de partage</h5>
+    
+        <form action="{{ path('app_carnet_sante_toggle_share') }}" method="post">
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="shareToggle" 
+                       name="share" {{ app.user.carnetPartage ? 'checked' : '' }}
+                       onchange="this.form.submit()">
+                <label class="form-check-label" for="shareToggle">
+                    {{ app.user.carnetPartage ? 'Partagé' : 'Privé' }}
+                </label>
+            </div>
+</form>
+
+        <h1 class="consultation-header">Liste des Consultations </h1>
+
+        <div class="consultation-grid">
+            {% for consultation in consultations %}
+            <div class="consultation-card">
+                <div class="consultation-card-header">
+                    
+                    <span class="consultation-date">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>    
+                    {{ consultation.date|date('d/m/Y H:i') }}</span>
+                    {# <span class="consultation-price">{{ consultation.prix }} Ariary</span> #}
+                </div>
+                
+                <div class="consultation-card-body">
+                {% if app.user.role != 'ROLE_PATIENT' %}
+                    <div class="consultation-patient">
+                        <span class="consultation-label">Patient</span>
+                        <span class="consultation-value">{{ consultation.rendezVous.patient.nom }} {{ consultation.rendezVous.patient.prenom }}</span>
+                    </div>
+                {% endif %}
+                {% if app.user.role != 'ROLE_PROFESSIONNEL_DE_SANTE' %}
+                    <div class="consultation-professional">
+                        <span class="consultation-label">Médecin</span>
+                        <span class="consultation-value">Dr. {{ consultation.rendezVous.professionnel.nom }} {{ consultation.rendezVous.professionnel.prenom }}</span>
+                    </div>
+                {% endif %}
+                
+                    
+                    <div class="consultation-prescriptions">
+                        <span class="consultation-label">Ordonnances</span>
+                        {% if consultation.ordonnances is not empty %}
+                            <ul class="prescription-list">
+                                {% for ordonnance in consultation.ordonnances %}
+                                    <li class="prescription-item">
+                                        {{ ordonnance.medicament }} ({{ ordonnance.dose }}) - 
+                                        Prises: {{ ordonnance.prise|join(', ')|replace({'matin': 'Matin', 'midi': 'Midi', 'soir': 'Soir'}) }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <span class="no-prescription">Aucune ordonnance</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="consultation-card-footer">
+                    <a href="{{ path('app_consultation_show', {'id': consultation.id}) }}" class="action-button view-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        Voir
+                    </a>
+                    {% if is_granted('ROLE_PROFESSIONNEL_DE_SANTE') and app.user == consultation.rendezVous.professionnel %}
+                        <a href="{{ path('app_consultation_edit', {'id': consultation.id}) }}" class="action-button edit-button">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                            </svg>
+                            Modifier
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+                <div class="no-consultation">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                    </svg>
+                    <p style="margin-top: 1rem; font-size: 1.25rem; font-weight: 600;">Aucune consultation trouvée</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

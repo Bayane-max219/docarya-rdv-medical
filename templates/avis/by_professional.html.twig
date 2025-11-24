@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Avis pour {{ professionnel.nom }}{% endblock %}
+
+{% block body %}
+    <h1>Avis pour {{ professionnel.nom }}</h1>
+
+    {% for avis in avis %}
+        <div>
+            <h2>Note: {{ avis.note }}/5</h2>
+            <p>Par: {{ avis.patient.nom }}</p>
+            <p>Le: {{ avis.createdAt|date('d/m/Y') }}</p>
+            <p>{{ avis.commentaire }}</p>
+        </div>
+    {% else %}
+        <p>Aucun avis pour ce professionnel</p>
+    {% endfor %}
+
+    <a href="{{ path('app_avis_index') }}">Retour à la liste</a>
+{% endblock %}

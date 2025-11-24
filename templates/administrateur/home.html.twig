@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration - Accueil{% endblock %}
+
+{% block body %}
+    <h1>Tableau de bord de l'administration</h1>
+
+    <div>
+        <h2>Gestion des entités</h2>
+        <ul>
+            {% for entity, url in crudLinks %}
+                <li><a href="{{ url }}">{{ entity }}</a></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

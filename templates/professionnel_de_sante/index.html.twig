@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+{% block title %}Liste des professionnels de santé{% endblock %}
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap" style="gap: 1rem;">
+        <h1 class="mb-0">Liste des professionnels de santé</h1>
+        <form method="get" class="d-flex align-items-center" style="gap: 0.5rem; min-width: 300px;">
+            <input type="text" name="specialite" id="specialite-search" class="form-control me-2" placeholder="Rechercher par spécialité..." value="{{ app.request.get('specialite') }}" autocomplete="off">
+            <button type="submit" class="btn btn-primary">Rechercher</button>
+            <button type="button" id="reset-search" class="btn btn-secondary" style="display: {{ app.request.get('specialite') ? 'inline-block' : 'none' }};">Réinitialiser</button>
+        </form>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Spécialité</th>
+                    <th>Téléphone</th>
+                    <th>Vérifié</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for professionnel_de_sante in professionnel_de_santes %}
+                    <tr>
+                        <td>{{ professionnel_de_sante.nom }}</td>
+                        <td>{{ professionnel_de_sante.prenom }}</td>
+                        <td>{{ professionnel_de_sante.specialite.nom }}</td>
+                        <td>{{ professionnel_de_sante.telephone }}</td>
+                        <td>{{ professionnel_de_sante.isVerified ? 'Oui' : 'Non' }}</td>
+                        <td>
+                            <a href="{{ path('app_professionnel_de_sante_show', { id: professionnel_de_sante.id }) }}" class="btn btn-info">Voir</a>
+                            <form action="{{ path('app_professionnel_de_sante_delete', { id: professionnel_de_sante.id }) }}" method="post" style="display: inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ professionnel_de_sante.id) }}">
+                                <button type="submit" class="btn btn-danger">Supprimer</button>
+                            </form>
+                            {% if not professionnel_de_sante.isVerified %}
+                                <form method="post" action="{{ path('app_professionnel_de_sante_validate', { id: professionnel_de_sante.id }) }}" style="display: inline-block;" onsubmit="return confirm('Êtes-vous sûr de vouloir valider le compte de ce professionnel ?');">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('validate' ~ professionnel_de_sante.id) }}">
+                                    <button type="submit" class="btn btn-success">Valider</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="6">Aucun professionnel de santé trouvé.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    </div>
+    <script>
+    // Réinitialiser la recherche sans recharger manuellement la page
+    document.addEventListener('DOMContentLoaded', function() {
+        const resetBtn = document.getElementById('reset-search');
+        const searchInput = document.getElementById('specialite-search');
+        if (resetBtn && searchInput) {
+            resetBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                searchInput.form.submit();
+            });
+        }
+        // Soumission automatique si on efface tout le champ (optionnel)
+        searchInput && searchInput.addEventListener('input', function() {
+            if (this.value === '' && resetBtn) {
+                this.form.submit();
+            }
+        });
+    });
+    </script>
+</div>
+{% endblock %}

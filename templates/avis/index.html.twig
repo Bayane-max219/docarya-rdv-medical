@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des Avis{% endblock %}
+
+{% block body %}
+    <h1>Liste des Avis</h1>
+    
+    <a href="{{ path('app_avis_new') }}">Créer un nouvel avis</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Patient</th>
+                <th>Professionnel</th>
+                <th>Note</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for avi in avis %}
+            <tr>
+                <td>{{ avi.patient.nom }}</td>
+                <td>{{ avi.professionnel.nom }}</td>
+                <td>
+                    {% for i in 1..5 %}
+                        {% if i <= avi.note %}★{% else %}☆{% endif %}
+                    {% endfor %}
+                    ({{ avi.note }}/5)
+                </td>
+                <td>{{ avi.createdAt|date('d/m/Y H:i') }}</td>
+                <td>
+                    <a href="{{ path('app_avis_show', {'id': avi.id}) }}">Voir</a>
+                    {% if is_granted('EDIT', avi) %}
+                        <a href="{{ path('app_avis_edit', {'id': avi.id}) }}">Modifier</a>
+                        <form method="post" action="{{ path('app_avis_delete', {'id': avi.id}) }}" style="display: inline-block;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ avi.id) }}">
+                            <button type="submit" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cet avis ?')">Supprimer</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Aucun avis trouvé</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {# Pagination manuelle simple #}
+    {% if page > 1 %}
+        <a href="{{ path('app_avis_index', {'page': page - 1}) }}">Précédent</a>
+    {% endif %}
+    
+    Page {{ page }}
+    
+    {% if avis|length == limit %}
+        <a href="{{ path('app_avis_index', {'page': page + 1}) }}">Suivant</a>
+    {% endif %}
+{% endblock %}

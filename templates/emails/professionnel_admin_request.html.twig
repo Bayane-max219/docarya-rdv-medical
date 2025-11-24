@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Nouveau professionnel à valider</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            margin: 30px auto;
+            padding: 30px;
+            text-align: left;
+        }
+        h1 {
+            color: #111827;
+            margin-bottom: 16px;
+        }
+        p {
+            color: #4b5563;
+            line-height: 1.6;
+        }
+        .button {
+            display: inline-block;
+            margin-top: 24px;
+            padding: 12px 24px;
+            border-radius: 999px;
+            background: linear-gradient(to right, #7c3aed, #ec4899);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .footer {
+            margin-top: 24px;
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Nouveau professionnel de santé à valider</h1>
+    <p>Un nouveau professionnel de santé vient de s'inscrire sur Docarya.</p>
+    <p>
+        <strong>Nom :</strong> {{ professionnel.prenom }} {{ professionnel.nom }}<br>
+        <strong>Email :</strong> {{ professionnel.email }}
+    </p>
+    <p>
+        Cliquez sur le bouton ci-dessous pour valider ce compte et lui donner accès à la plateforme.
+    </p>
+    <p>
+        <a class="button" href="{{ url('app_professionnel_de_sante_confirm_email', { id: professionnel.id }) }}">
+            Valider ce compte professionnel
+        </a>
+    </p>
+    <div class="footer">
+        <p>Cet email vous est envoyé automatiquement par la plateforme Docarya.</p>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,586 @@
+
+{% block body %}
+<div class="xk7p2_container">
+    <div class="qm3j8_card">
+        <div class="zt5v9_left_panel">
+            <div class="lp6r4_header">
+                <div class="gf2h7_logo">
+                    <span class="yw9k1_logo_text">DOCARYA</span>
+                </div>
+                <nav class="bn4t6_nav">
+                    <p class="cp8m3_nav_link">Simple</p>
+                    <p class="cp8m3_nav_link">-</p>
+                    <p class="cp8m3_nav_link">Efficace</p>
+                    <p class="cp8m3_nav_link">-</p>
+                    <p class="cp8m3_nav_link">Sécurisé</p>
+                </nav>
+            </div>
+
+            <form method="post" class="jt7r2_form">
+                {% if error %}
+                    <div class="vb5n8_alert">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
+
+                {% if app.user %}
+                    <div class="ek9p4_user_info">
+                        Vous êtes connecté en tant que : {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}" class="hd2j6_logout">Logout</a>
+                    </div>
+                {% endif %}
+
+                <h1 class="qs8w3_title">Connexion</h1>
+                <p class="fm6p9_subtitle">Veuillez entrer vos informations ci-dessous</p>
+
+                {% for message in app.flashes('reset_password_success') %}
+                    <div style="margin-bottom: 1rem; color: #2563eb; font-weight: 500; text-align: center;">{{ message }}</div>
+                {% endfor %}
+
+                <div class="uy4k7_form_group">
+                    <label for="inputEmail" class="xz2v8_label">Email</label>
+                    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="gt7h3_input" autocomplete="email" required autofocus>
+                </div>
+
+                <div class="uy4k7_form_group">
+                    <label for="inputPassword" class="xz2v8_label">Mot de passe</label>
+                    <div class="kp3j7_password_field">
+                        <input type="password" name="password" id="inputPassword" class="gt7h3_input" autocomplete="current-password" required>
+                        <button type="button" class="rq9t2_toggle_password" aria-label="Toggle password visibility">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <button class="zx5c8_submit_btn" type="submit">
+                    Log in
+                </button>
+
+                <div class="nh6b2_signup_prompt">
+                    <span>Pas encore de compte?</span>
+                    <a href="{{ path('app_register') }}" class="hd2j6_signup_link">S'inscrire</a>
+                </div>
+                <div class="nh6b2_forgot_prompt">
+                    <a href="{{ path('app_forgot_password_request') }}" class="hd2j6_forgot_link">Mot de passe oublié&nbsp;?</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="zt5v9_right_panel">
+            <div class="lp6r4_theme_toggle">
+                <button class="gf2h7_theme_btn" id="themeToggle" aria-label="Toggle theme">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="yw9k1_sun_icon">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="bn4t6_moon_icon">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="cp8m3_content">
+              <div class="jt7r2_bot_illustration">
+                <img src="{{ asset('images/docaryaLogo.png') }}" alt="Illustration" style="box-shadow : 0px 0px 10px 10px #73a5bf;
+                max-width: 200px;
+                border-radius : 10px;
+                overflow: hidden;">
+          </div>
+                          <h2 class="vb5n8_brand">Docarya</h2>
+                <p class="ek9p4_tagline">Celui qui vous rapproche avec les héros</p>
+                <div class="hd2j6_features">
+                    <div class="qs8w3_feature">
+                        <span class="fm6p9_check_icon">✓</span>
+                        <span>Déjà plusieurs utilisateurs satisfaits</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle password visibility
+        const togglePassword = document.querySelector('.rq9t2_toggle_password');
+        const passwordInput = document.querySelector('#inputPassword');
+        
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+        });
+        
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const htmlElement = document.documentElement;
+        
+        // Check for saved theme preference or use preferred color scheme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            htmlElement.setAttribute('data-theme', savedTheme);
+        } else {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: light)').matches;
+            htmlElement.setAttribute('data-theme', prefersDark ? 'light' : 'dark');
+        }
+        
+        // Toggle theme
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = htmlElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            htmlElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+    });
+</script>
+{% endblock %}
+{% block style %}
+<style>
+    :root {
+  --xk7p2-bg-color: #fdf2ff;
+  --qm3j8-card-bg: rgba(255, 255, 255, 0.9);
+  --zt5v9-text-primary: #1a1a1a;
+  --lp6r4-text-secondary: #4a4a4a;
+  --gf2h7-accent-gradient: linear-gradient(to right, #7c3aed, #ec4899);
+  --yw9k1-input-bg: #f1f5f9;
+  --bn4t6-input-border: #e2e8f0;
+  --cp8m3-button-text: #ffffff;
+  --jt7r2-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  --vb5n8-panel-bg: #111827;
+  --ek9p4-panel-text: #ffffff;
+  --hd2j6-feature-bg: rgba(255, 255, 255, 0.1);
+  --qs8w3-social-border: #e2e8f0;
+  --fm6p9-link-color: #7c3aed;
+  --uy4k7-error-color: #ef4444;
+}
+
+[data-theme="dark"] {
+  --xk7p2-bg-color: #0f172a;
+  --qm3j8-card-bg: #1e293b;
+  --zt5v9-text-primary: #f1f5f9;
+  --lp6r4-text-secondary: #cbd5e1;
+  --yw9k1-input-bg: #334155;
+  --bn4t6-input-border: #475569;
+  --jt7r2-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  --qs8w3-social-border: #475569;
+  --ek9p4-panel-text: #f9fafb;
+  --hd2j6-feature-bg: rgba(148, 163, 184, 0.25);
+  --fm6p9-link-color: #a5b4fc;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+}
+
+body {
+  background:
+    radial-gradient(circle at top left, rgba(236, 72, 153, 0.25) 0, transparent 55%),
+    radial-gradient(circle at bottom right, rgba(124, 58, 237, 0.28) 0, transparent 60%),
+    var(--xk7p2-bg-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  transition: background 0.3s ease;
+}
+
+.xk7p2_container {
+  width: 100%;
+  max-width: 1100px;
+  padding: 20px;
+}
+
+.qm3j8_card {
+  display: flex;
+  background-color: var(--qm3j8-card-bg);
+  border-radius: 26px;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(148, 163, 184, 0.45);
+  backdrop-filter: blur(14px);
+}
+
+/* Left Panel - Form Side */
+.zt5v9_left_panel {
+  flex: 1;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.lp6r4_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.gf2h7_logo {
+  display: flex;
+  align-items: center;
+}
+
+.yw9k1_logo_text {
+  font-weight: 100;
+  font-size: 1.2rem;
+  color: var(--zt5v9-text-primary);
+}
+
+.bn4t6_nav {
+  display: flex;
+  gap: 20px;
+}
+
+.cp8m3_nav_link {
+  color: var(--lp6r4-text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.cp8m3_nav_link:hover {
+  color: var(--zt5v9-text-primary);
+}
+
+.jt7r2_form {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+}
+
+.vb5n8_alert {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: var(--uy4k7-error-color);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.ek9p4_user_info {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: var(--fm6p9-link-color);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
+
+.hd2j6_logout {
+  color: var(--fm6p9-link-color);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.hd2j6_logout:hover {
+  text-decoration: underline;
+}
+
+.qs8w3_title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--zt5v9-text-primary);
+  margin-bottom: 10px;
+}
+
+.fm6p9_subtitle {
+  color: var(--lp6r4-text-secondary);
+  margin-bottom: 30px;
+  font-size: 0.95rem;
+}
+
+.uy4k7_form_group {
+  margin-bottom: 20px;
+}
+
+.xz2v8_label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--lp6r4-text-secondary);
+  margin-bottom: 8px;
+}
+
+.gt7h3_input {
+  width: 100%;
+  padding: 12px 15px;
+  background-color: var(--yw9k1-input-bg);
+  border: 1px solid var(--bn4t6-input-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: var(--zt5v9-text-primary);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.gt7h3_input:focus {
+  outline: none;
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+}
+
+.kp3j7_password_field {
+  position: relative;
+}
+
+.rq9t2_toggle_password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--lp6r4-text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.zx5c8_submit_btn {
+  background: var(--gf2h7-accent-gradient);
+  color: var(--cp8m3-button-text);
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.zx5c8_submit_btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+}
+
+.nh6b2_social_login {
+  display: flex;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+.vm4k9_social_btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  background: none;
+  border: 1px solid var(--qs8w3-social-border);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--zt5v9-text-primary);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.vm4k9_social_btn:hover {
+  background-color: var(--yw9k1-input-bg);
+}
+
+.vm4k9_social_btn svg {
+  fill: currentColor;
+}
+
+.nh6b2_signup_prompt {
+  margin-top: 30px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--lp6r4-text-secondary);
+}
+
+.hd2j6_signup_link {
+  color: var(--fm6p9-link-color);
+  text-decoration: none;
+  font-weight: 500;
+  margin-left: 5px;
+}
+
+.hd2j6_signup_link:hover {
+  text-decoration: underline;
+}
+
+/* Right Panel - Illustration Side */
+.zt5v9_right_panel {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--ek9p4-panel-text);
+  background:
+    radial-gradient(circle at top, rgba(251, 113, 133, 0.12) 0, transparent 65%),
+    linear-gradient(145deg, #111827, #020617);
+}
+
+.lp6r4_theme_toggle {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.gf2h7_theme_btn {
+  background: none;
+  border: none;
+  color: var(--ek9p4-panel-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.yw9k1_sun_icon {
+  display: none;
+}
+
+.bn4t6_moon_icon {
+  display: block;
+}
+
+[data-theme="dark"] .yw9k1_sun_icon {
+  display: block;
+}
+
+[data-theme="dark"] .bn4t6_moon_icon {
+  display: none;
+}
+
+.cp8m3_content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 400px;
+}
+
+.jt7r2_bot_illustration {
+  width: 200px;
+  height: 200px;
+  background-size: cover;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.jt7r2_bot_illustration::before {
+  content: "";
+  position: absolute;
+  top: -50px;
+  left: -50px;
+  right: -50px;
+  bottom: -50px;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  z-index: -1;
+}
+
+.vb5n8_brand {
+  font-size: 2.5rem;
+  font-weight: 100;
+  margin-bottom: 10px;
+  background: linear-gradient(to right, #7c3aed, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
+}
+
+.ek9p4_tagline {
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+  max-width: 300px;
+}
+
+.hd2j6_features {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+.qs8w3_feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  background-color: var(--hd2j6-feature-bg);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.fm6p9_check_icon {
+  color: #a855f7;
+  font-weight: bold;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .qm3j8_card {
+    flex-direction: column;
+  }
+  
+  .zt5v9_left_panel {
+    padding: 20px;
+  }
+  
+  .jt7r2_form {
+    max-width: 100%;
+  }
+  
+  .zt5v9_right_panel {
+    padding: 40px 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .lp6r4_header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+  
+  .bn4t6_nav {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .nh6b2_social_login {
+    flex-direction: column;
+  }
+}
+.nh6b2_forgot_prompt {
+    text-align: center;
+    margin-top: 10px;
+}
+.hd2j6_forgot_link {
+    color: #7c3aed;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 1em;
+}
+.hd2j6_forgot_link:hover {
+    color: #5b21b6;
+}
+</style>
+{% endblock %}

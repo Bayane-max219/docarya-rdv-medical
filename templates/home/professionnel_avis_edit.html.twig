@@ -1,0 +1,11 @@
+{# templates/home/professionnel_avis_edit.html.twig #}
+
+<h1>Modifier l'avis pour {{ professionnel.nom }} {{ professionnel.prenom }}</h1>
+
+{# Formulaire pour modifier l'avis #}
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button type="submit">Modifier</button>
+{{ form_end(form) }}
+
+<a href="{{ path('app_professionnel_avis', {'id': professionnel.id}) }}">Retour aux avis</a>

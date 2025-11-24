@@ -1,0 +1,49 @@
+security:
+  enable_authenticator_manager: true
+  password_hashers:
+    Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: "auto"
+  providers:
+    app_user_provider:
+      entity:
+        class: App\Entity\User
+        property: email
+
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+    main:
+      lazy: true
+      provider: app_user_provider
+      custom_authenticator: App\Security\SecurityControllerAuthenticator
+      form_login:
+        login_path: app_login
+        check_path: app_public_home
+      logout:
+        path: app_logout
+      remember_me:
+        secret: "%kernel.secret%"
+        lifetime: 604800
+        path: /
+        always_remember_me: true
+      # Add the entry_point configuration here
+      entry_point: App\Security\SecurityControllerAuthenticator
+
+  access_control:
+    - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+    - { path: ^/account-pending, roles: PUBLIC_ACCESS }
+    - { path: ^/$, roles: PUBLIC_ACCESS }
+    - { path: ^/logout, roles: PUBLIC_ACCESS }
+    - { path: ^/login, roles: PUBLIC_ACCESS }
+    - { path: ^/register, roles: PUBLIC_ACCESS }
+    - { path: ^/professionnel/[0-9]+/confirm-from-email, roles: PUBLIC_ACCESS }
+    - { path: ^/, roles: ROLE_VERIFIED }
+
+when@test:
+  security:
+    password_hashers:
+      Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+        algorithm: auto
+        cost: 4
+        time_cost: 3
+        memory_cost: 10
