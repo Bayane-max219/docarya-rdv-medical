@@ -53,31 +53,55 @@ de valider les comptes et de superviser l’activité.
 > à la racine du projet (même niveau que `composer.json`).
 > GitHub les affichera automatiquement si les chemins correspondent.
 
-Exemples (adaptés aux fichiers réels du projet) :
+Liste complète des captures (toutes dans `screenshoots/`) :
 
-### Page de connexion
+### 01 – Page d’accueil (publique)
+
+![Page d’accueil](screenshoots/01-Accueil.png)
+
+### 02 – Page d’inscription
+
+![Page d’inscription](screenshoots/02-Inscription.png)
+
+### 03 – Formulaire d’inscription patient
+
+![Formulaire patient](screenshoots/03-Formulaire_Patient.png)
+
+### 04 – Formulaire d’inscription professionnel de santé
+
+![Formulaire professionnel](screenshoots/04-Formulaire_Dr.png)
+
+### 05 – Page de connexion
 
 ![Page de connexion](screenshoots/05-Connexion.png)
 
-### Recherche de professionnels de santé
+### 06 – E-mail de confirmation / notification
 
-![Recherche de professionnels](screenshoots/01-Accueil.png)
+![E-mail de confirmation](screenshoots/06-email.png)
 
-### Calendrier de prise de rendez-vous
+### 07 – Tableau de bord / accueil patient
+
+![Accueil patient](screenshoots/07-Accuiel_Patient.png)
+
+### 08 – Calendrier de prise de rendez-vous
 
 ![Calendrier de RDV](screenshoots/08-Calendrier.png)
 
-### Espace patient – Mes rendez-vous
+### 09 – Profil d’un professionnel de santé
 
-![Mes rendez-vous patient](screenshoots/11-RDV.png)
+![Profil professionnel](screenshoots/09-Profil_Dr.png)
 
-### Espace professionnel – Mes rendez-vous
+### 10 – Détail d’une consultation
 
-![Mes rendez-vous professionnel](screenshoots/10-Consultation.png)
+![Consultation](screenshoots/10-Consultation.png)
 
-### Validation des professionnels (administrateur)
+### 11 – Liste des rendez-vous
 
-![Validation admin](screenshoots/06-email.png)
+![Liste des rendez-vous](screenshoots/11-RDV.png)
+
+### 12 – Gestion des indisponibilités (agenda)
+
+![Indisponibilités](screenshoots/12-Indisponibilite.png)
 
 ---
 
